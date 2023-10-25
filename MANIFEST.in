@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include sranco *.css
+recursive-include sranco *.csv
+recursive-include sranco *.html
+recursive-include sranco *.ico
+recursive-include sranco *.js
+recursive-include sranco *.json
+recursive-include sranco *.md
+recursive-include sranco *.png
+recursive-include sranco *.py
+recursive-include sranco *.svg
+recursive-include sranco *.txt
+recursive-exclude sranco *.pyc
