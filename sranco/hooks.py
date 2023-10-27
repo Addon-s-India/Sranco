@@ -11,7 +11,7 @@ app_license = "MIT"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/sranco/css/sranco.css"
+app_include_css = "public/css/report.css"
 # app_include_js = "/assets/sranco/js/sranco.js"
 
 # include js, css files in header of web template
@@ -29,6 +29,12 @@ app_license = "MIT"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
+doctype_js = {
+    "Opportunity": "public/js/Opportunity.js",
+    "Quotation": "public/js/Quotation.js",
+    "Sales Order": "public/js/SalesOrder.js",
+    "Item Price": "public/js/ItemPrice.js",
+}
 # doctype_js = {"doctype" : "public/js/doctype.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -117,6 +123,16 @@ app_license = "MIT"
 # Document Events
 # ---------------
 # Hook on document methods and events
+
+doc_events = {
+    "Sales Order": {
+        "on_submit": "sranco.sales_order.on_submit"
+    },
+        "Item Price": {
+        "validate": "sranco.item_price.validate"
+    }
+
+}
 
 # doc_events = {
 #	"*": {

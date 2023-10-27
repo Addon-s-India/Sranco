@@ -1,0 +1,91 @@
+// Copyright (c) 2023, Dinesh Panchal and contributors
+// For license information, please see license.txt
+/* eslint-disable */
+
+frappe.query_reports["Price History"] = {
+  onload: function (report) {
+    // Add fields for By Percent and By Amount
+    report.page.add_field({
+      fieldname: "by_percent",
+      label: __("By Percent + / -"),
+      fieldtype: "Float",
+    });
+
+    report.page.add_field({
+      fieldname: "by_amount",
+      label: __("By Amount + / -"),
+      fieldtype: "Currency",
+    });
+
+    // Add Apply button
+    report.page.add_button(__("Update Price"), function () {
+      console.log("Apply button clicked ::::");
+      let by_percent = report.page.fields_dict.by_percent.get_value();
+      let by_amount = report.page.fields_dict.by_amount.get_value();
+
+      if (!by_percent && !by_amount) {
+        frappe.msgprint(__("Please enter either a percentage or an amount."));
+        return;
+      }
+
+      let docnames = report.data.map((row) => row.docname).filter(Boolean);
+
+      frappe.call({
+        method: "sranco.api.update_item_prices",
+        args: {
+          docnames: JSON.stringify(docnames),
+          by_percent: by_percent,
+          by_amount: by_amount,
+        },
+        callback: function (response) {
+          if (response.message === "success") {
+            console.log("Prices are updated successfully ::: ");
+            frappe.msgprint(__("Prices updated successfully."));
+            report.refresh(); // Reload report to show updated prices
+          } else {
+            frappe.msgprint(__("Error updating prices."));
+          }
+        },
+      });
+    });
+  },
+  filters: [
+    {
+      fieldname: "from_date",
+      label: __("From Date"),
+      fieldtype: "Date",
+      default: frappe.datetime.add_months(frappe.datetime.get_today(), -1),
+      reqd: 1,
+    },
+    {
+      fieldname: "to_date",
+      label: __("To Date"),
+      fieldtype: "Date",
+      default: frappe.datetime.get_today(),
+      reqd: 1,
+    },
+    {
+      fieldname: "item_code",
+      label: __("Item"),
+      fieldtype: "Link",
+      options: "Item",
+    },
+    {
+      fieldname: "item_name",
+      label: __("Item"),
+      fieldtype: "Link",
+      options: "Item",
+    },
+    {
+      fieldname: "tn_number",
+      label: __("TN Number"),
+      fieldtype: "Data",
+    },
+    {
+      fieldname: "customer",
+      label: __("Customer"),
+      fieldtype: "Link",
+      options: "Customer",
+    },
+  ],
+};

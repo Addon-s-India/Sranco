@@ -1,0 +1,87 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-10-26 00:23:23.551122",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "shape",
+  "diameter",
+  "thickness",
+  "bore",
+  "column_break_cwb58",
+  "speed",
+  "attach_drawing",
+  "more_dimensions",
+  "specification"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code"
+  },
+  {
+   "columns": 2,
+   "fieldname": "shape",
+   "fieldtype": "Data",
+   "label": "Shape"
+  },
+  {
+   "columns": 2,
+   "fieldname": "diameter",
+   "fieldtype": "Data",
+   "label": "Diameter"
+  },
+  {
+   "columns": 2,
+   "fieldname": "thickness",
+   "fieldtype": "Data",
+   "label": "Thickness"
+  },
+  {
+   "fieldname": "bore",
+   "fieldtype": "Data",
+   "label": "Bore"
+  },
+  {
+   "fieldname": "column_break_cwb58",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "speed",
+   "fieldtype": "Data",
+   "label": "Speed"
+  },
+  {
+   "fieldname": "attach_drawing",
+   "fieldtype": "Attach",
+   "label": "Attach Drawing"
+  },
+  {
+   "fieldname": "more_dimensions",
+   "fieldtype": "Data",
+   "label": "More Dimensions"
+  },
+  {
+   "columns": 2,
+   "fieldname": "specification",
+   "fieldtype": "Data",
+   "label": "Specification"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-10-26 00:28:02.613401",
+ "modified_by": "Administrator",
+ "module": "Sranco",
+ "name": "Not Deliverables",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
