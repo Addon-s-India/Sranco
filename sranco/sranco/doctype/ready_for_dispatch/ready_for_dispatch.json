@@ -8,9 +8,10 @@
  "engine": "InnoDB",
  "field_order": [
   "order_confirmation",
+  "customer",
+  "column_break_y6wlb",
   "sales_order",
   "purchase_order",
-  "customer",
   "date",
   "section_break_ijq1z",
   "dispatch_table"
@@ -58,12 +59,16 @@
    "label": "Purchase Order",
    "options": "Purchase Order",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_y6wlb",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-10-29 01:15:51.710908",
+ "modified": "2023-10-29 02:35:15.982956",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Ready For Dispatch",

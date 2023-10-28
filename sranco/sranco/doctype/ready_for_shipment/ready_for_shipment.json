@@ -32,7 +32,8 @@
   {
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date"
+   "label": "Date",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_xcf6t",
@@ -66,7 +67,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-10-29 00:43:32.668658",
+ "modified": "2023-10-29 02:35:31.940331",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Ready for Shipment",

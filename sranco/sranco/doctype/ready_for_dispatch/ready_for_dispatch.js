@@ -119,6 +119,7 @@ function fetch_purchase_order_items(purchase_order_name, frm) {
             sequence_no: item.idx,
             item_name: item.item_name,
             item_code: item.item_code,
+            tn_number: item.custom_tn_number,
             qty: item.qty,
             ready_qty: item.custom_ready_qty,
             customer: purchase_order.customer,
