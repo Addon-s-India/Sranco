@@ -1,6 +1,6 @@
 import frappe
 import json
-from frappe.utils import logger, now_datetime
+from frappe.utils import logger, today, add_days
 
 logger.set_log_level("DEBUG")
 logger = frappe.logger("Sranco_logs", allow_site=True, file_count=1)
@@ -148,3 +148,52 @@ def create_gi_date_tracker_and_update_po(dispatch_data):
         frappe.log_error(str(e), "Error updating Ready Quantity & Creating GI Date Tracker")
 
         return 'error'
+    
+    
+@frappe.whitelist()
+def create_shipment_tracker_and_update_po(shipment_data, purchase_order, sales_order, order_confirmation):
+    try:
+        shipment_data = json.loads(shipment_data)
+
+        for row in shipment_data:
+            logger.info(f"Row :: \n{row}\n")
+            # Create Shipment Tracker
+            shipment_tracker = frappe.new_doc('Shipment Tracker')
+            
+            # Populate the main fields from row data
+            shipment_tracker.sales_order = sales_order
+            shipment_tracker.purchase_order = purchase_order
+            shipment_tracker.sequence_no = row['sequence_no']
+            shipment_tracker.item_code = row['item_code']
+            shipment_tracker.item_name = row['item_name']
+            shipment_tracker.order_confirmation = order_confirmation
+            shipment_tracker.tn_number = row['tn_number']
+            shipment_tracker.customer = row['customer']
+            shipment_tracker.total_quantity_to_ship = row['update_shipment_qty']
+            shipment_tracker.gi_date = today()  # Assuming gi_date is today's date
+
+            # Populate the Transport Mode Table
+            for mode_field, mode_name in [('air_qty', 'Air'), ('express_qty', 'Express'), ('sea_qty', 'Sea')]:
+                if row.get(mode_field):  # If the mode has a quantity
+                    transport_mode = frappe.get_doc('Transport Mode', mode_name)
+                    shipment_tracker.append('transport_mode_table', {
+                        'mode': mode_name,
+                        'quantity': row[mode_field],
+                        'eod': add_days(today(), transport_mode.days)  # Calculate the eod based on days in Transport Mode doctype
+                    })
+
+            shipment_tracker.insert()
+            shipment_tracker.submit()
+
+            # Update custom_shipped_qty in Purchase Order Item
+            po_item = frappe.get_doc('Purchase Order Item', {'parent': purchase_order, 'idx': row['sequence_no']})
+            po_item.custom_shipped_qty += float(row['update_shipment_qty'])
+            po_item.save()
+
+        return 'success'
+    except Exception as e:
+        logger.info(f"Error creating Shipment Tracker & updating shipped qty :: {e}")
+        frappe.log_error(str(e), "Error creating Shipment Tracker & updating shipped qty.")
+        return 'error'
+
+

@@ -11,7 +11,10 @@
   "item_name",
   "ready_qty",
   "shipment_qty",
-  "update_shipment_qty"
+  "update_shipment_qty",
+  "air_qty",
+  "sea_qty",
+  "express_qty"
  ],
  "fields": [
   {
@@ -54,12 +57,27 @@
    "fieldname": "update_shipment_qty",
    "fieldtype": "Float",
    "label": "Update Shipment Qty"
+  },
+  {
+   "fieldname": "air_qty",
+   "fieldtype": "Float",
+   "label": "Air Qty"
+  },
+  {
+   "fieldname": "sea_qty",
+   "fieldtype": "Float",
+   "label": "Sea Qty"
+  },
+  {
+   "fieldname": "express_qty",
+   "fieldtype": "Float",
+   "label": "Express Qty"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-10-28 19:35:50.147283",
+ "modified": "2023-10-29 00:43:53.136881",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Shipment Table",

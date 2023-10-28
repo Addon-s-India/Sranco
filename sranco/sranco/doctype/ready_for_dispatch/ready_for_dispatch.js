@@ -8,6 +8,9 @@ frappe.ui.form.on("Ready For Dispatch", {
     frm.fields_dict["dispatch_table"].grid.wrapper
       .find(".grid-remove-rows")
       .hide();
+
+    // Clear data when the document loads
+    clear_doc_data(frm);
   },
   refresh: function (frm) {
     frm.get_field("dispatch_table").grid.cannot_add_rows = true;
@@ -18,6 +21,11 @@ frappe.ui.form.on("Ready For Dispatch", {
 
     frm.add_custom_button("Apply Changes", function () {
       apply_changes_function(frm);
+    });
+
+    // Add "Clear Data" button
+    frm.add_custom_button("Clear Data", function () {
+      clear_doc_data(frm);
     });
   },
   order_confirmation: function (frm) {
@@ -105,18 +113,53 @@ function fetch_purchase_order_items(purchase_order_name, frm) {
 }
 
 function apply_changes_function(frm) {
-  frappe.call({
-    method: "sranco.api.create_gi_date_tracker_and_update_po",
-    args: {
-      dispatch_data: frm.doc.dispatch_table,
-    },
-    callback: function (response) {
-      if (response.message == "success") {
-        frappe.msgprint("Operation completed successfully.");
-        frm.reload_doc(); // Reload the document to see updated values
-      } else {
-        frappe.msgprint("There was an error processing your request.");
-      }
-    },
+  // Validate if update_ready_qty is not 0 or greater than equal to ready_qty - qty
+  let is_valid = true;
+  let set_but_condition = false;
+  $.each(frm.doc.shipment_table, function (idx, row) {
+    if (
+      row.update_ready_qty == 0 ||
+      row.update_ready_qty >= row.ready_qty - row.qty
+    ) {
+      is_valid = false;
+      return false; // Exit from loop
+    } else {
+      is_valid = true;
+    }
   });
+
+  if (is_valid) {
+    frappe.call({
+      method: "sranco.api.create_gi_date_tracker_and_update_po",
+      args: {
+        dispatch_data: frm.doc.dispatch_table,
+      },
+      callback: function (response) {
+        if (response.message == "success") {
+          frappe.msgprint("Operation completed successfully.");
+          frm.reload_doc(); // Reload the document to see updated values
+        } else {
+          frappe.msgprint("There was an error processing your request.");
+        }
+      },
+    });
+  } else {
+    frappe.msgprint(
+      "Update Ready Quantity cannot be 0 or exceed the Ready Quantity - Quantity."
+    );
+  }
+}
+
+function clear_doc_data(frm) {
+  // Clear main fields
+  frm.set_value("order_confirmation", "");
+  frm.set_value("customer", "");
+  frm.set_value("sales_order", "");
+  frm.set_value("purchase_order", "");
+
+  // Clear the child table data
+  frm.clear_table("dispatch_table");
+
+  // Refresh the form to reflect the changes
+  frm.refresh();
 }

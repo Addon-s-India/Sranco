@@ -10,12 +10,11 @@
   "order_confirmation",
   "customer",
   "date",
+  "column_break_7ccel",
+  "purchase_order",
+  "sales_order",
   "section_break_xcf6t",
-  "shipment_table",
-  "traportation_mode_section",
-  "item_code",
-  "tn_number",
-  "transport_mode_table"
+  "shipment_table"
  ],
  "fields": [
   {
@@ -27,7 +26,8 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
-   "options": "Customer"
+   "options": "Customer",
+   "read_only": 1
   },
   {
    "fieldname": "date",
@@ -45,33 +45,28 @@
    "options": "Shipment Table"
   },
   {
-   "fieldname": "traportation_mode_section",
-   "fieldtype": "Section Break",
-   "label": "Traportation Mode"
+   "fieldname": "column_break_7ccel",
+   "fieldtype": "Column Break"
   },
   {
-   "fieldname": "item_code",
+   "fieldname": "purchase_order",
    "fieldtype": "Link",
-   "label": "Item Code",
-   "options": "Item"
+   "label": "Purchase Order",
+   "options": "Purchase Order",
+   "read_only": 1
   },
   {
-   "fetch_from": "item_code.custom_tn_number",
-   "fieldname": "tn_number",
-   "fieldtype": "Data",
-   "label": "TN Number"
-  },
-  {
-   "fieldname": "transport_mode_table",
-   "fieldtype": "Table",
-   "label": "Transport Mode Table",
-   "options": "Transport Mode Table"
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "label": "Sales Order",
+   "options": "Sales Order",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-10-28 19:48:08.560714",
+ "modified": "2023-10-29 00:43:32.668658",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Ready for Shipment",
