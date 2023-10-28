@@ -1,12 +1,6 @@
 // Copyright (c) 2023, Dinesh Panchal and contributors
 // For license information, please see license.txt
 
-// frappe.ui.form.on('Ready for Shipment', {
-// 	// refresh: function(frm) {
-
-// 	// }
-// });
-
 frappe.ui.form.on("Ready for Shipment", {
   order_confirmation: function (frm) {
     if (frm.doc.order_confirmation) {
@@ -31,15 +25,6 @@ frappe.ui.form.on("Ready for Shipment", {
     frm.fields_dict["shipment_table"].grid.wrapper
       .find(".grid-remove-rows")
       .hide();
-
-    // frm.add_custom_button("Apply Changes", function () {
-    //   apply_shipment_changes(frm);
-    // });
-
-    // // Add "Clear Data" button
-    // frm.add_custom_button("Clear Data", function () {
-    //   clear_doc_data(frm);
-    // });
 
     // Add "Apply Changes" button to the child table
     frm.fields_dict["shipment_table"].grid.add_custom_button(
@@ -68,7 +53,7 @@ frappe.ui.form.on("Ready for Shipment", {
 frappe.ui.form.on("Shipment Table", {
   update_shipment_qty: function (frm, cdt, cdn) {
     let row = locals[cdt][cdn];
-    if (row.update_shipment_qty >= row.ready_qty - row.shipment_qty) {
+    if (row.update_shipment_qty > row.ready_qty - row.shipment_qty) {
       frappe.model.set_value(cdt, cdn, "update_shipment_qty", 0.0);
       frappe.msgprint(
         "Update Shipment Quantity cannot exceed the Ready Quantity - Shipment Quantity."
@@ -88,12 +73,6 @@ function validate_transport_mode_qty(frm, cdt, cdn) {
   let sea_qty = row.sea_qty || 0;
 
   let total_transport_qty = air_qty + express_qty + sea_qty;
-
-  console.log("Air Qty :: ", air_qty);
-  console.log("Express Qty :: ", express_qty);
-  console.log("Sea Qty :: ", sea_qty);
-  console.log("total_transport_qty :: ", total_transport_qty);
-  console.log("row.update_shipment_qty :: ", row.update_shipment_qty);
 
   if (total_transport_qty !== row.update_shipment_qty) {
     frappe.msgprint(
@@ -117,7 +96,6 @@ function fetch_purchase_order_for_shipment(order_confirmation) {
         let purchase_order_data = response.message[0];
         cur_frm.set_value("purchase_order", purchase_order_data.name);
         cur_frm.set_value("customer", purchase_order_data.customer);
-        // cur_frm.set_value("sales_order", purchase_order_data.sales_order);
         // Fetching items from the Purchase Order and populating the shipment_table
         fetch_purchase_order_items(purchase_order_data);
       } else {
@@ -171,33 +149,51 @@ function fetch_purchase_order_items(purchase_order_data) {
 function apply_shipment_changes(frm) {
   // Validate if update_shipment_qty and transport mode quantities are equal
   let is_valid = true;
+  let error_message = "";
+
   $.each(frm.doc.shipment_table, function (idx, row) {
     let air_qty = row.air_qty || 0;
     let express_qty = row.express_qty || 0;
     let sea_qty = row.sea_qty || 0;
 
     let total_transport_qty = air_qty + express_qty + sea_qty;
-    console.log("total_transport_qty :: ", total_transport_qty);
-    console.log("row.update_shipment_qty :: ", row.update_shipment_qty);
-    if (row.update_shipment_qty !== total_transport_qty) {
+
+    if (!row.update_shipment_qty || row.update_shipment_qty === 0.0) {
+      error_message =
+        "Update Shipment Quantity cannot be 0 for item " + row.item_name + ".";
       is_valid = false;
       return false; // Exit from loop
     }
-    if (row.update_shipment_qty >= row.ready_qty - row.shipment_qty) {
-      frappe.model.set_value(cdt, cdn, "update_shipment_qty", 0.0);
-      frappe.msgprint(
-        "Update Shipment Quantity cannot exceed the Ready Quantity - Shipment Quantity."
-      );
+    if (
+      row.update_shipment_qty !== total_transport_qty &&
+      row.update_shipment_qty !== 0
+    ) {
+      error_message =
+        "The sum of transport mode quantities must equal Update Shipment Quantity for item " +
+        row.item_name +
+        ".";
       is_valid = false;
+      return false; // Exit from loop
+    }
+
+    if (
+      row.update_shipment_qty > row.ready_qty - row.shipment_qty &&
+      row.update_shipment_qty < 0
+    ) {
+      frappe.model.set_value(row.doctype, row.name, "update_shipment_qty", 0.0); // Using row.doctype and row.name instead of cdt and cdn
+      error_message =
+        "Update Shipment Quantity cannot exceed the Ready Quantity - Shipment Quantity for item " +
+        row.item_name +
+        ".";
+      is_valid = false;
+      return false; // Exit from loop
     }
   });
 
-  if (is_valid) {
-    create_shipment_tracker_and_update_po(frm);
+  if (!is_valid) {
+    frappe.msgprint(error_message);
   } else {
-    frappe.msgprint(
-      "The sum of transport mode quantities must equal Update Shipment Quantity for all items."
-    );
+    create_shipment_tracker_and_update_po(frm);
   }
 }
 
@@ -214,8 +210,45 @@ function create_shipment_tracker_and_update_po(frm) {
     callback: function (response) {
       if (response.message == "success") {
         frappe.msgprint("Operation completed successfully.");
+
+        // Fetch updated shipment_qty values for the Purchase Order items
+        fetch_updated_shipment_qty_and_update_child_table(frm);
       } else {
         frappe.msgprint("There was an error processing your request.");
+      }
+    },
+  });
+}
+
+function fetch_updated_shipment_qty_and_update_child_table(frm) {
+  frappe.call({
+    method: "frappe.client.get",
+    args: {
+      doctype: "Purchase Order",
+      name: frm.doc.purchase_order,
+    },
+    callback: function (response) {
+      if (response.message) {
+        let purchase_order = response.message;
+
+        // Update the shipment_table with new shipment_qty values
+        $.each(frm.doc.shipment_table, function (index, row) {
+          let matching_po_item = purchase_order.items.find(
+            (item) => item.item_code === row.item_code
+          );
+
+          if (matching_po_item) {
+            frappe.model.set_value(
+              row.doctype,
+              row.name,
+              "shipment_qty",
+              matching_po_item.custom_shipped_qty
+            );
+          }
+        });
+
+        // Refresh the form to show the updated values
+        frm.refresh_field("shipment_table");
       }
     },
   });

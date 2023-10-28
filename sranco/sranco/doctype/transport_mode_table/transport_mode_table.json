@@ -25,6 +25,7 @@
    "label": "Quantity"
   },
   {
+   "allow_on_submit": 1,
    "columns": 2,
    "fieldname": "eod",
    "fieldtype": "Date",
@@ -34,7 +35,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-10-28 14:21:23.528956",
+ "modified": "2023-10-29 01:56:35.635424",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Transport Mode Table",

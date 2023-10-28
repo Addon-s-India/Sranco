@@ -138,10 +138,12 @@ function apply_changes_function(frm) {
   // Validate if update_ready_qty is not 0 or greater than equal to ready_qty - qty
   let is_valid = true;
   let set_but_condition = false;
-  $.each(frm.doc.shipment_table, function (idx, row) {
+  $.each(frm.doc.dispatch_table, function (idx, row) {
+    // Modified from shipment_table to dispatch_table
     if (
       row.update_ready_qty == 0 ||
-      row.update_ready_qty >= row.ready_qty - row.qty
+      row.update_ready_qty > row.qty - row.ready_qty ||
+      row.update_ready_qty < 0
     ) {
       is_valid = false;
       return false; // Exit from loop
@@ -159,7 +161,9 @@ function apply_changes_function(frm) {
       callback: function (response) {
         if (response.message == "success") {
           frappe.msgprint("Operation completed successfully.");
-          frm.reload_doc(); // Reload the document to see updated values
+
+          // Fetch updated ready_qty values for the Purchase Order items
+          fetch_updated_ready_qty_and_update_child_table(frm);
         } else {
           frappe.msgprint("There was an error processing your request.");
         }
@@ -167,9 +171,43 @@ function apply_changes_function(frm) {
     });
   } else {
     frappe.msgprint(
-      "Update Ready Quantity cannot be 0 or exceed the Ready Quantity - Quantity."
+      "Update Ready Quantity cannot be 0 or exceed the Quantity - Ready Quantity."
     );
   }
+}
+
+function fetch_updated_ready_qty_and_update_child_table(frm) {
+  frappe.call({
+    method: "frappe.client.get",
+    args: {
+      doctype: "Purchase Order",
+      name: frm.doc.purchase_order,
+    },
+    callback: function (response) {
+      if (response.message) {
+        let purchase_order = response.message;
+
+        // Update the dispatch_table with new ready_qty values
+        $.each(frm.doc.dispatch_table, function (index, row) {
+          let matching_po_item = purchase_order.items.find(
+            (item) => item.item_code === row.item_code
+          );
+
+          if (matching_po_item) {
+            frappe.model.set_value(
+              row.doctype,
+              row.name,
+              "ready_qty",
+              matching_po_item.custom_ready_qty
+            );
+          }
+        });
+
+        // Refresh the form to show the updated values
+        frm.refresh_field("dispatch_table");
+      }
+    },
+  });
 }
 
 function clear_doc_data(frm) {
