@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-10-28 19:28:46.776822",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "order_confirmation",
+  "customer",
+  "date",
+  "section_break_ijq1z",
+  "dispatch_table"
+ ],
+ "fields": [
+  {
+   "fieldname": "order_confirmation",
+   "fieldtype": "Data",
+   "label": "Order Confirmation"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Data",
+   "label": "Customer"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "section_break_ijq1z",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "dispatch_table",
+   "fieldtype": "Table",
+   "label": "Dispatch Table",
+   "options": "Dispatch Table"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2023-10-28 19:37:39.354476",
+ "modified_by": "Administrator",
+ "module": "Sranco",
+ "name": "Ready For Dispatch",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

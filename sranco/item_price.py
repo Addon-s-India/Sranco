@@ -27,23 +27,37 @@ def validate(doc, method):
                 'date_time': now_datetime()
             })
             # SNC commission history logic
-    update_snc_commission_history(doc)
+    if (doc.custom_snc_commission_ is not None ) or (doc.custom_snc_commission_lumpsum is not None):
+        logger.info(f"Validate method called. SNC commission is None for {doc.item_code} and the percentage is {doc.custom_snc_commission_} and the lumpsum is {doc.custom_snc_commission_lumpsum}")
+        update_snc_commission_history(doc)
 
 
 def update_snc_commission_history(doc):
-    # Check if the document is a new one or if it's an existing one
-    original_doc = None if doc.is_new() else frappe.get_doc('Item Price', doc.name)
-    
-    # If commission percentage is modified
-    if not original_doc or (original_doc and original_doc.custom_snc_commission_ != doc.custom_snc_commission_):
-        percent = doc.custom_snc_commission_
-        amount = (doc.custom_snc_commission_ * doc.price_list_rate) / 100
-        append_snc_commission_history(doc, percent, amount)
-    
-    # If commission lumpsum is modified
-    if not original_doc or (original_doc and original_doc.custom_snc_commission_lumpsum != doc.custom_snc_commission_lumpsum):
-        amount = doc.custom_snc_commission_lumpsum
-        append_snc_commission_history(doc, None, amount)
+    try:
+        if doc.custom_snc_commission_ is None:
+            # Handle the None value, e.g., set it to 0 or return from the function
+            doc.custom_snc_commission_ = 0.0
+        # Check if the document is a new one or if it's an existing one
+        original_doc = None if doc.is_new() else frappe.get_doc('Item Price', doc.name)
+        
+        # If commission percentage is modified
+        if not original_doc or (original_doc and original_doc.custom_snc_commission_ != doc.custom_snc_commission_):
+            percent = doc.custom_snc_commission_
+            logger.info(f"percent value is {percent}")
+            if percent is None or percent == 0:
+                amount = 0
+            else:
+                amount = (doc.custom_snc_commission_ * doc.price_list_rate) / 100
+            append_snc_commission_history(doc, percent, amount)
+        
+        # If commission lumpsum is modified
+        if  not original_doc or (original_doc and original_doc.custom_snc_commission_lumpsum != doc.custom_snc_commission_lumpsum):
+            
+            amount = doc.custom_snc_commission_lumpsum
+            append_snc_commission_history(doc, None, amount)
+    except Exception as e:
+        logger.error(f"Error in update_snc_commission_history: {e}")
+        frappe.log_error(f"Error in update_snc_commission_history: {e}", "Sranco_logs")
 
 def append_snc_commission_history(doc, percent, amount):
     doc.append('custom_snc_commission_history', {

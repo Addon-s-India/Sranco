@@ -1,0 +1,142 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:ST-{MM}{YY}-{#####}",
+ "creation": "2023-10-28 13:37:16.315172",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "sales_order",
+  "purchase_order",
+  "gi_date",
+  "item_code",
+  "item_name",
+  "column_break_edms7",
+  "order_confirmation",
+  "tn_number",
+  "customer",
+  "total_quantity_to_ship",
+  "warehouse",
+  "amended_from",
+  "transport_mode_table_section",
+  "transport_mode"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Naming Series"
+  },
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "label": "Sales Order",
+   "options": "Sales Order"
+  },
+  {
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "label": "Purchase Order",
+   "options": "Purchase Order"
+  },
+  {
+   "fieldname": "gi_date",
+   "fieldtype": "Date",
+   "label": "GI Date"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name"
+  },
+  {
+   "fetch_from": "item_code.custom_tn_number",
+   "fieldname": "tn_number",
+   "fieldtype": "Data",
+   "label": "TN Number"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Data",
+   "label": "Customer"
+  },
+  {
+   "fieldname": "order_confirmation",
+   "fieldtype": "Data",
+   "label": "Order Confirmation"
+  },
+  {
+   "fieldname": "total_quantity_to_ship",
+   "fieldtype": "Data",
+   "label": "Total Quantity to Ship"
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Data",
+   "label": "Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Shipment Tracker",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_edms7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "transport_mode_table_section",
+   "fieldtype": "Section Break",
+   "label": "Transport Mode Table"
+  },
+  {
+   "fieldname": "transport_mode",
+   "fieldtype": "Table",
+   "label": "Transport Mode",
+   "options": "Transport Mode Table"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2023-10-28 14:22:25.692198",
+ "modified_by": "Administrator",
+ "module": "Sranco",
+ "name": "Shipment Tracker",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

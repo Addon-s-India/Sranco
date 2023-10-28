@@ -126,12 +126,11 @@ doctype_js = {
 
 doc_events = {
     "Sales Order": {
-        "on_submit": "sranco.sales_order.on_submit"
+        "on_submit": "sranco.sales_order.on_submit",
     },
         "Item Price": {
         "validate": "sranco.item_price.validate"
     }
-
 }
 
 # doc_events = {

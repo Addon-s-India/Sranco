@@ -1,0 +1,71 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-10-28 19:35:50.147283",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sequence_no",
+  "item_code",
+  "item_name",
+  "ready_qty",
+  "shipment_qty",
+  "update_shipment_qty"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "fieldname": "sequence_no",
+   "fieldtype": "Data",
+   "label": "Sequence No",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "ready_qty",
+   "fieldtype": "Data",
+   "label": "Ready Qty",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "shipment_qty",
+   "fieldtype": "Data",
+   "label": "Shipment Qty",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "update_shipment_qty",
+   "fieldtype": "Float",
+   "label": "Update Shipment Qty"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-10-28 19:35:50.147283",
+ "modified_by": "Administrator",
+ "module": "Sranco",
+ "name": "Shipment Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

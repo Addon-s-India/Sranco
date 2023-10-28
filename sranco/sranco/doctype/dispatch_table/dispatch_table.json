@@ -1,0 +1,65 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-10-28 19:32:24.949961",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sequence_no",
+  "item_code",
+  "item_name",
+  "qty",
+  "ready_qty",
+  "update_ready_qty"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Data",
+   "label": "Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ready_qty",
+   "fieldtype": "Data",
+   "label": "Ready Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sequence_no",
+   "fieldtype": "Data",
+   "label": "Sequence No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "update_ready_qty",
+   "fieldtype": "Data",
+   "label": "Update Ready Qty"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-10-28 19:36:39.921116",
+ "modified_by": "Administrator",
+ "module": "Sranco",
+ "name": "Dispatch Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-10-28 19:29:47.447700",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "order_confirmation",
+  "customer",
+  "date",
+  "section_break_xcf6t",
+  "shipment_table",
+  "traportation_mode_section",
+  "item_code",
+  "tn_number",
+  "transport_mode_table"
+ ],
+ "fields": [
+  {
+   "fieldname": "order_confirmation",
+   "fieldtype": "Data",
+   "label": "Order Confirmation"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "section_break_xcf6t",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "shipment_table",
+   "fieldtype": "Table",
+   "label": "Shipment Table",
+   "options": "Shipment Table"
+  },
+  {
+   "fieldname": "traportation_mode_section",
+   "fieldtype": "Section Break",
+   "label": "Traportation Mode"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "item_code.custom_tn_number",
+   "fieldname": "tn_number",
+   "fieldtype": "Data",
+   "label": "TN Number"
+  },
+  {
+   "fieldname": "transport_mode_table",
+   "fieldtype": "Table",
+   "label": "Transport Mode Table",
+   "options": "Transport Mode Table"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2023-10-28 19:48:08.560714",
+ "modified_by": "Administrator",
+ "module": "Sranco",
+ "name": "Ready for Shipment",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
