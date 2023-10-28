@@ -200,6 +200,13 @@ function fetch_updated_ready_qty_and_update_child_table(frm) {
               "ready_qty",
               matching_po_item.custom_ready_qty
             );
+            // reset the update_ready_qty field
+            frappe.model.set_value(
+              row.doctype,
+              row.name,
+              "update_ready_qty",
+              0
+            );
           }
         });
 

@@ -244,6 +244,16 @@ function fetch_updated_shipment_qty_and_update_child_table(frm) {
               "shipment_qty",
               matching_po_item.custom_shipped_qty
             );
+            // Reset the values of update_shipment_qty, air_qty, express_qty, and sea_qty
+            frappe.model.set_value(
+              row.doctype,
+              row.name,
+              "update_shipment_qty",
+              0
+            );
+            frappe.model.set_value(row.doctype, row.name, "air_qty", 0);
+            frappe.model.set_value(row.doctype, row.name, "express_qty", 0);
+            frappe.model.set_value(row.doctype, row.name, "sea_qty", 0);
           }
         });
 
