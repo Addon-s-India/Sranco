@@ -32,14 +32,36 @@ frappe.ui.form.on("Ready for Shipment", {
       .find(".grid-remove-rows")
       .hide();
 
-    frm.add_custom_button("Apply Changes", function () {
-      apply_shipment_changes(frm);
-    });
+    // frm.add_custom_button("Apply Changes", function () {
+    //   apply_shipment_changes(frm);
+    // });
 
-    // Add "Clear Data" button
-    frm.add_custom_button("Clear Data", function () {
-      clear_doc_data(frm);
-    });
+    // // Add "Clear Data" button
+    // frm.add_custom_button("Clear Data", function () {
+    //   clear_doc_data(frm);
+    // });
+
+    // Add "Apply Changes" button to the child table
+    frm.fields_dict["shipment_table"].grid.add_custom_button(
+      __("Apply Changes"),
+      function () {
+        apply_shipment_changes(frm);
+      }
+    );
+
+    // Add "Clear Data" button to the child table
+    frm.fields_dict["shipment_table"].grid.add_custom_button(
+      __("Clear Data"),
+      function () {
+        clear_doc_data(frm);
+      }
+    );
+
+    // Change the button style to primary for visibility (optional)
+    frm.fields_dict["shipment_table"].grid.grid_buttons
+      .find(".btn-custom")
+      .removeClass("btn-default")
+      .addClass("btn-primary");
   },
 });
 

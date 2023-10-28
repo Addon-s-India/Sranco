@@ -19,14 +19,36 @@ frappe.ui.form.on("Ready For Dispatch", {
       .find(".grid-remove-rows")
       .hide();
 
-    frm.add_custom_button("Apply Changes", function () {
-      apply_changes_function(frm);
-    });
+    // frm.add_custom_button("Apply Changes", function () {
+    //   apply_changes_function(frm);
+    // });
 
-    // Add "Clear Data" button
-    frm.add_custom_button("Clear Data", function () {
-      clear_doc_data(frm);
-    });
+    // // Add "Clear Data" button
+    // frm.add_custom_button("Clear Data", function () {
+    //   clear_doc_data(frm);
+    // });
+
+    // Add "Apply Changes" button to the child table
+    frm.fields_dict["dispatch_table"].grid.add_custom_button(
+      __("Apply Changes"),
+      function () {
+        apply_changes_function(frm);
+      }
+    );
+
+    // Add "Clear Data" button to the child table
+    frm.fields_dict["dispatch_table"].grid.add_custom_button(
+      __("Clear Data"),
+      function () {
+        clear_doc_data(frm);
+      }
+    );
+
+    // Change the button style to primary for visibility (optional)
+    frm.fields_dict["dispatch_table"].grid.grid_buttons
+      .find(".btn-custom")
+      .removeClass("btn-default")
+      .addClass("btn-primary");
   },
   order_confirmation: function (frm) {
     if (frm.doc.order_confirmation) {
