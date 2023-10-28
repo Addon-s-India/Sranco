@@ -115,3 +115,36 @@ def update_item_commissions(docnames, by_percent=None, by_amount=None):
         return "error"
 
 
+@frappe.whitelist()
+def create_gi_date_tracker_and_update_po(dispatch_data):
+    try:
+        dispatch_data = json.loads(dispatch_data)
+
+        for row in dispatch_data:
+            logger.info(f"Row :: {row}")
+            # Create and submit GI Date Tracker
+            gi_date_tracker = frappe.new_doc('GI Date Tracker')
+            gi_date_tracker.sequence_no = (row['sequence_no'])
+            gi_date_tracker.item_code = row['item_code']
+            gi_date_tracker.item_name = row['item_name']
+            gi_date_tracker.ready_qty = float(row['update_ready_qty'])
+            gi_date_tracker.purchase_order = row['purchase_order']
+            gi_date_tracker.sales_order = row['sales_order']
+            gi_date_tracker.order_confirmation = row['order_confirmation']
+            gi_date_tracker.customer = row['customer']
+            gi_date_tracker.warehouse = "Goods In Transit - S"
+            # ... other fields as needed
+            gi_date_tracker.insert()
+            gi_date_tracker.submit()
+
+            # Update custom_ready_qty in Purchase Order Item
+            po_item = frappe.get_doc('Purchase Order Item', {'parent': row['purchase_order'], 'idx': row['sequence_no']})
+            po_item.custom_ready_qty += row['update_ready_qty']
+            po_item.save()
+
+        return 'success'
+    except Exception as e:
+        logger.info(f"Error updating Ready Quantity & Creating GI Date Tracker :: {e}")
+        frappe.log_error(str(e), "Error updating Ready Quantity & Creating GI Date Tracker")
+
+        return 'error'

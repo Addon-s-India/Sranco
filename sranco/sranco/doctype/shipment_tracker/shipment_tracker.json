@@ -1,14 +1,13 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "naming_series:ST-{MM}{YY}-{#####}",
+ "autoname": "format:ST-{MM}{YY}-{#####}",
  "creation": "2023-10-28 13:37:16.315172",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "naming_series",
   "sales_order",
   "purchase_order",
   "gi_date",
@@ -25,12 +24,6 @@
   "transport_mode"
  ],
  "fields": [
-  {
-   "fieldname": "naming_series",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Naming Series"
-  },
   {
    "fieldname": "sales_order",
    "fieldtype": "Link",
@@ -115,11 +108,11 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-10-28 14:22:25.692198",
+ "modified": "2023-10-28 19:55:06.340173",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Shipment Tracker",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
