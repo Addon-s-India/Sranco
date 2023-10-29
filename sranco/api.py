@@ -34,7 +34,7 @@ def create_new_item(item_data):
                     item.set(field, "010190")
                 elif field == 'custom_attach_drawing' and item_data['custom_attach_drawing']:
                     item.set(field, item_data[field])
-                    item.set('has_drawing', 1)
+                    item.set('custom_has_drawing', 1)
                 elif field == 'uom':
                     item.set('stock_uom', item_data[field])
                 elif field == 'base_rate':
