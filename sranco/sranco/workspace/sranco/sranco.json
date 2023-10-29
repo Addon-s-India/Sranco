@@ -124,11 +124,30 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Masters",
-   "link_count": 4,
+   "label": "Reports",
+   "link_count": 1,
    "link_type": "DocType",
    "onboard": 0,
    "only_for": "India",
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Order Analysis",
+   "link_count": 0,
+   "link_to": "Sales Order Analysis",
+   "link_type": "Report",
+   "onboard": 0,
+   "only_for": "India",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Masters",
+   "link_count": 6,
+   "onboard": 0,
    "type": "Card Break"
   },
   {
@@ -178,26 +197,25 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Reports",
-   "link_count": 1,
-   "link_type": "DocType",
+   "label": "Price History",
+   "link_count": 0,
+   "link_to": "Price History",
+   "link_type": "Report",
    "onboard": 0,
-   "only_for": "India",
-   "type": "Card Break"
+   "type": "Link"
   },
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Sales Order Analysis",
+   "label": "SNC Commission History",
    "link_count": 0,
-   "link_to": "Sales Order Analysis",
+   "link_to": "SNC Commision History",
    "link_type": "Report",
    "onboard": 0,
-   "only_for": "India",
    "type": "Link"
   }
  ],
- "modified": "2023-10-29 16:08:45.760761",
+ "modified": "2023-10-29 21:33:38.169386",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Sranco",
