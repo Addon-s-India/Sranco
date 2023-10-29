@@ -27,23 +27,28 @@ def create_new_item(item_data):
         ]
         
         for field in fields_to_map:
-            if field in item_data:  # Check if the field exists in item_data
-                if field == 'item_group':
-                    item.set(field, "All Item Groups")
-                elif field == 'gst_hsn_code':
-                    item.set(field, "010190")
-                elif field == 'custom_attach_drawing' and item_data['custom_attach_drawing']:
-                    item.set(field, item_data[field])
-                    item.set('custom_has_drawing', 1)
-                elif field == 'uom':
-                    item.set('stock_uom', item_data[field])
-                elif field == 'base_rate':
-                    item.set('valuation_rate', item_data[field])
+            if field == 'item_group':
+                item.set(field, "All Item Groups")
+            elif field == 'gst_hsn_code':
+                item.set(field, "010190")
+            elif field == 'uom':
+                uom = item_data.get(field)
+                if uom:
+                    item.set('stock_uom', uom)
                 else:
-                    item.set(field, item_data[field])
+                    item.set('stock_uom', "Nos")
+            elif field == 'base_rate':
+                item.set('valuation_rate', item_data.get(field))
+            elif field == 'custom_attach_drawing':
+                drawing_value = item_data.get(field)
+                if drawing_value:
+                    item.set(field, drawing_value)
+                    item.set('custom_has_drawing', 1)
+                else:
+                    logger.warning(f"Field {field} is missing or empty in item_data")
             else:
-                logger.error(f"Field {field} not found in item_data")
-
+                item.set(field, item_data.get(field))
+        
         item.insert()
 
         return {
@@ -51,8 +56,9 @@ def create_new_item(item_data):
             'item_name': item.item_name
         }
     except Exception as e:
-        logger.error(e)
-        frappe.throw(e)
+        logger.error(str(e))
+        frappe.throw(str(e))
+
 
 
 @frappe.whitelist()
