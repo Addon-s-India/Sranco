@@ -120,6 +120,7 @@ function fetch_purchase_order_items(purchase_order_name, frm) {
             item_name: item.item_name,
             item_code: item.item_code,
             tn_number: item.custom_tn_number,
+            customer_item_code: item.custom_customer_item_code,
             qty: item.qty,
             ready_qty: item.custom_ready_qty,
             customer: purchase_order.customer,

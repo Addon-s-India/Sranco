@@ -64,6 +64,7 @@ def sales_order_on_submit(doc, method):
         po_item.uom = item.uom
         po_item.rate = item.rate
         po_item.custom_tn_number = item.custom_tn_number
+        po_item.custom_customer_item_code = item.custom_customer_item_code
         po_item.sales_order = doc.name  # Linking Sales Order to Purchase Order items
     
     # Save and submit the Purchase Order

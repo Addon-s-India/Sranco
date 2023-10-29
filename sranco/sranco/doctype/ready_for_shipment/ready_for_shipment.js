@@ -133,6 +133,7 @@ function fetch_purchase_order_items(purchase_order_data) {
             ready_qty: item.custom_ready_qty,
             shipment_qty: item.custom_shipped_qty,
             tn_number: item.custom_tn_number,
+            customer_item_code: item.custom_customer_item_code,
             customer: purchase_order.customer,
             purchase_order: purchase_order.name,
             sales_order: item.sales_order,

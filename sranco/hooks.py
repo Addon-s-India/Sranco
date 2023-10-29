@@ -13,7 +13,15 @@ app_license = "MIT"
 # include js, css files in header of desk.html
 app_include_css = "public/css/report.css"
 # app_include_js = "/assets/sranco/js/sranco.js"
-
+fixtures = [
+    {"dt": "Print Format", "filters": [
+        [
+            "module", "like", 
+                "Sranco"
+            
+        ]
+    ]}
+]
 # include js, css files in header of web template
 # web_include_css = "/assets/sranco/css/sranco.css"
 # web_include_js = "/assets/sranco/js/sranco.js"
@@ -34,6 +42,7 @@ doctype_js = {
     "Quotation": "public/js/Quotation.js",
     "Sales Order": "public/js/SalesOrder.js",
     "Item Price": "public/js/ItemPrice.js",
+    "Purchase Receipt": "public/js/PurchaseReceipt.js",
 }
 # doctype_js = {"doctype" : "public/js/doctype.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}

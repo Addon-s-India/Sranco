@@ -11,6 +11,7 @@
   "shipped",
   "sequence_no",
   "item_code",
+  "customer_item_code",
   "item_name",
   "ready_qty",
   "tn_number",
@@ -101,12 +102,18 @@
    "fieldname": "sequence_no",
    "fieldtype": "Data",
    "label": "Sequence No"
+  },
+  {
+   "fieldname": "customer_item_code",
+   "fieldtype": "Data",
+   "label": "Customer Item Code",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-10-28 20:04:26.058860",
+ "modified": "2023-10-29 11:55:33.546098",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "GI Date Tracker",

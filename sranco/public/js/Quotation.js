@@ -38,6 +38,24 @@ frappe.ui.form.on("Quotation", {
           },
         });
       }
+
+      // New logic for updating ref_code in Customer Items
+      if (item.custom_customer_item_code && item.item_code) {
+        frappe.call({
+          method: "sranco.api.update_customer_item_ref_code",
+          args: {
+            item_code: item.item_code,
+            customer: frm.doc.party_name,
+            ref_code: item.custom_customer_item_code,
+          },
+          async: false,
+          callback: function (response) {
+            if (!response.exc) {
+              frappe.msgprint(response.message);
+            }
+          },
+        });
+      }
     });
   },
 });
@@ -57,6 +75,29 @@ frappe.ui.form.on("Quotation Item", {
       row.custom_snc_commision_amount =
         (row.custom_snc_commision_ * row.price_list_rate) / 100;
       frm.refresh_field("items");
+    }
+  },
+  item_code: function (frm, cdt, cdn) {
+    var row = locals[cdt][cdn];
+    if (row.item_code && frm.doc.customer) {
+      // Ensure item_code and customer are present
+      frappe.call({
+        method: "sranco.api.get_customer_ref_code",
+        args: {
+          item_code: row.item_code,
+          customer: frm.doc.party_name,
+        },
+        callback: function (response) {
+          if (response.message) {
+            frappe.model.set_value(
+              cdt,
+              cdn,
+              "custom_customer_item_code",
+              response.message
+            );
+          }
+        },
+      });
     }
   },
 });

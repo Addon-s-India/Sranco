@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 import json
 from frappe.utils import logger, today, add_days
 
@@ -127,6 +128,8 @@ def create_gi_date_tracker_and_update_po(dispatch_data):
             gi_date_tracker.sequence_no = (row['sequence_no'])
             gi_date_tracker.item_code = row['item_code']
             gi_date_tracker.item_name = row['item_name']
+            gi_date_tracker.tn_number = row['tn_number']
+            gi_date_tracker.customer_item_code = row['customer_item_code']
             gi_date_tracker.ready_qty = float(row['update_ready_qty'])
             gi_date_tracker.purchase_order = row['purchase_order']
             gi_date_tracker.sales_order = row['sales_order']
@@ -168,6 +171,7 @@ def create_shipment_tracker_and_update_po(shipment_data, purchase_order, sales_o
             shipment_tracker.item_name = row['item_name']
             shipment_tracker.order_confirmation = order_confirmation
             shipment_tracker.tn_number = row['tn_number']
+            shipment_tracker.customer_item_code = row['customer_item_code']
             shipment_tracker.customer = row['customer']
             shipment_tracker.total_quantity_to_ship = row['update_shipment_qty']
             shipment_tracker.gi_date = today()  # Assuming gi_date is today's date
@@ -197,3 +201,53 @@ def create_shipment_tracker_and_update_po(shipment_data, purchase_order, sales_o
         return 'error'
 
 
+@frappe.whitelist()
+def update_customer_item_ref_code(item_code, customer, ref_code):
+    item = frappe.get_doc("Item", item_code)
+    
+    customer_item_entry = next((entry for entry in item.customer_items if entry.customer_name == customer), None)
+
+    if customer_item_entry:
+        customer_item_entry.ref_code = ref_code
+    else:
+        # Add new entry
+        item.append("customer_items", {
+            "customer_name": customer,
+            "ref_code": ref_code
+            # Add other required/default fields if any
+        })
+
+    item.save()
+
+    return "Customer item reference code updated successfully."
+
+
+@frappe.whitelist()
+def get_customer_ref_code(item_code, customer):
+    item = frappe.get_doc("Item", item_code)
+    for customer_item in item.customer_items:
+        if customer_item.customer_name == customer:
+            return customer_item.ref_code
+    return None
+
+
+@frappe.whitelist()
+def update_received_qty_in_shipment_tracker(shipment_tracker, transport_mode, received_qty):
+    try:
+        # Fetch the Shipment Tracker document
+        shipment = frappe.get_doc("Shipment Tracker", shipment_tracker)
+        
+        # Loop through the transport_mode_table to find the correct mode and update its received_qty
+        for mode_row in shipment.transport_mode_table:
+            if mode_row.mode == transport_mode:
+                mode_row.received_qty = float(received_qty)
+                break
+        
+        # Save the updated Shipment Tracker document
+        shipment.save()
+
+        return "Received quantity updated successfully in Shipment Tracker."
+
+    except Exception as e:
+        return frappe.throw(_("An error occurred while updating the Shipment Tracker: {0}").format(e))
+    

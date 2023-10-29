@@ -8,6 +8,7 @@
  "field_order": [
   "mode",
   "quantity",
+  "received_qty",
   "eod"
  ],
  "fields": [
@@ -30,12 +31,19 @@
    "fieldname": "eod",
    "fieldtype": "Date",
    "label": "EOD"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "received_qty",
+   "fieldtype": "Float",
+   "label": "Received Qty",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-10-29 01:56:35.635424",
+ "modified": "2023-10-29 13:45:29.814362",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Transport Mode Table",
