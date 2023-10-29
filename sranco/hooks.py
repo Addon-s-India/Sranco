@@ -139,7 +139,10 @@ doc_events = {
     },
         "Item Price": {
         "validate": "sranco.item_price.validate"
-    }
+    },
+    "Purchase Receipt": {
+        "on_trash": "sranco.purchase_receipt.reset_received_qty_in_shipment_tracker",
+    },
 }
 
 # doc_events = {
