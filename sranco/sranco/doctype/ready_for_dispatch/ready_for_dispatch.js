@@ -137,44 +137,32 @@ function fetch_purchase_order_items(purchase_order_name, frm) {
 }
 
 function apply_changes_function(frm) {
-  // Validate if update_ready_qty is not 0 or greater than equal to ready_qty - qty
-  let is_valid = true;
-  let set_but_condition = false;
-  $.each(frm.doc.dispatch_table, function (idx, row) {
-    // Modified from shipment_table to dispatch_table
-    if (
-      row.update_ready_qty == 0 ||
-      row.update_ready_qty > row.qty - row.ready_qty ||
-      row.update_ready_qty < 0
-    ) {
-      is_valid = false;
-      return false; // Exit from loop
-    } else {
-      is_valid = true;
-    }
-  });
+  // Filter out valid rows
+  let valid_rows = frm.doc.dispatch_table.filter(
+    (row) =>
+      row.update_ready_qty > 0 &&
+      row.update_ready_qty <= row.qty - row.ready_qty
+  );
 
-  if (is_valid) {
+  if (valid_rows.length) {
     frappe.call({
       method: "sranco.api.create_gi_date_tracker_and_update_po",
       args: {
-        dispatch_data: frm.doc.dispatch_table,
+        dispatch_data: valid_rows,
       },
       callback: function (response) {
-        if (response.message == "success") {
-          frappe.msgprint("Operation completed successfully.");
-
-          // Fetch updated ready_qty values for the Purchase Order items
+        if (response.message) {
+          frappe.msgprint(response.message);
           fetch_updated_ready_qty_and_update_child_table(frm);
         } else {
-          frappe.msgprint("There was an error processing your request.");
+          frappe.msgprint(
+            response.message || "There was an error processing your request."
+          );
         }
       },
     });
   } else {
-    frappe.msgprint(
-      "Update Ready Quantity cannot be 0 or exceed the Quantity - Ready Quantity."
-    );
+    frappe.msgprint("No valid rows found to apply changes.");
   }
 }
 

@@ -148,53 +148,18 @@ function fetch_purchase_order_items(purchase_order_data) {
 }
 
 function apply_shipment_changes(frm) {
-  // Validate if update_shipment_qty and transport mode quantities are equal
-  let is_valid = true;
-  let error_message = "";
+  // Filter out valid rows
+  let valid_rows = frm.doc.shipment_table.filter(
+    (row) =>
+      row.update_shipment_qty > 0 &&
+      row.update_shipment_qty <= row.ready_qty - row.shipment_qty &&
+      row.air_qty + row.express_qty + row.sea_qty === row.update_shipment_qty
+  );
 
-  $.each(frm.doc.shipment_table, function (idx, row) {
-    let air_qty = row.air_qty || 0;
-    let express_qty = row.express_qty || 0;
-    let sea_qty = row.sea_qty || 0;
-
-    let total_transport_qty = air_qty + express_qty + sea_qty;
-
-    if (!row.update_shipment_qty || row.update_shipment_qty === 0.0) {
-      error_message =
-        "Update Shipment Quantity cannot be 0 for item " + row.item_name + ".";
-      is_valid = false;
-      return false; // Exit from loop
-    }
-    if (
-      row.update_shipment_qty !== total_transport_qty &&
-      row.update_shipment_qty !== 0
-    ) {
-      error_message =
-        "The sum of transport mode quantities must equal Update Shipment Quantity for item " +
-        row.item_name +
-        ".";
-      is_valid = false;
-      return false; // Exit from loop
-    }
-
-    if (
-      row.update_shipment_qty > row.ready_qty - row.shipment_qty &&
-      row.update_shipment_qty < 0
-    ) {
-      frappe.model.set_value(row.doctype, row.name, "update_shipment_qty", 0.0); // Using row.doctype and row.name instead of cdt and cdn
-      error_message =
-        "Update Shipment Quantity cannot exceed the Ready Quantity - Shipment Quantity for item " +
-        row.item_name +
-        ".";
-      is_valid = false;
-      return false; // Exit from loop
-    }
-  });
-
-  if (!is_valid) {
-    frappe.msgprint(error_message);
-  } else {
+  if (valid_rows.length) {
     create_shipment_tracker_and_update_po(frm);
+  } else {
+    frappe.msgprint("No valid rows found to apply shipment changes.");
   }
 }
 
@@ -209,8 +174,8 @@ function create_shipment_tracker_and_update_po(frm) {
       order_confirmation: frm.doc.order_confirmation,
     },
     callback: function (response) {
-      if (response.message == "success") {
-        frappe.msgprint("Operation completed successfully.");
+      if (response.message) {
+        frappe.msgprint(response.message);
 
         // Fetch updated shipment_qty values for the Purchase Order items
         fetch_updated_shipment_qty_and_update_child_table(frm);

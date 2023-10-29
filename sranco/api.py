@@ -126,9 +126,13 @@ def update_item_commissions(docnames, by_percent=None, by_amount=None):
 def create_gi_date_tracker_and_update_po(dispatch_data):
     try:
         dispatch_data = json.loads(dispatch_data)
+        skipped_items = []
 
         for row in dispatch_data:
-            logger.info(f"Row :: {row}")
+            # Validate the row again
+            if row['update_ready_qty'] <= 0 or row['update_ready_qty'] > row['qty'] - row['ready_qty']:
+                skipped_items.append(row['item_code'])
+                continue  # Skip this iteration and move to the next row
             # Create and submit GI Date Tracker
             gi_date_tracker = frappe.new_doc('GI Date Tracker')
             gi_date_tracker.sequence_no = (row['sequence_no'])
@@ -151,7 +155,11 @@ def create_gi_date_tracker_and_update_po(dispatch_data):
             po_item.custom_ready_qty += row['update_ready_qty']
             po_item.save()
 
-        return 'success'
+        message = "Operation completed successfully."
+        if skipped_items:
+            message += f" Skipped creating GI Date Tracker for items due to validation errors: {', '.join(skipped_items)}"
+        
+        return message
     except Exception as e:
         logger.info(f"Error updating Ready Quantity & Creating GI Date Tracker :: {e}")
         frappe.log_error(str(e), "Error updating Ready Quantity & Creating GI Date Tracker")
@@ -163,9 +171,16 @@ def create_gi_date_tracker_and_update_po(dispatch_data):
 def create_shipment_tracker_and_update_po(shipment_data, purchase_order, sales_order, order_confirmation):
     try:
         shipment_data = json.loads(shipment_data)
+        skipped_items = []
 
         for row in shipment_data:
-            logger.info(f"Row :: \n{row}\n")
+            # Validate the row again
+            total_transport_qty = row.get('air_qty', 0) + row.get('express_qty', 0) + row.get('sea_qty', 0)
+
+            if row['update_shipment_qty'] <= 0 or row['update_shipment_qty'] > row['ready_qty'] - row['shipment_qty'] or total_transport_qty != row['update_shipment_qty']:
+                skipped_items.append(row['item_code'])
+                continue  # Skip this iteration and move to the next row
+
             # Create Shipment Tracker
             shipment_tracker = frappe.new_doc('Shipment Tracker')
             
@@ -200,7 +215,11 @@ def create_shipment_tracker_and_update_po(shipment_data, purchase_order, sales_o
             po_item.custom_shipped_qty += float(row['update_shipment_qty'])
             po_item.save()
 
-        return 'success'
+        message = "Operation completed successfully."
+        if skipped_items:
+            message += f" Skipped creating Shipment Tracker for items due to validation errors: {', '.join(skipped_items)}"
+        
+        return message
     except Exception as e:
         logger.info(f"Error creating Shipment Tracker & updating shipped qty :: {e}")
         frappe.log_error(str(e), "Error creating Shipment Tracker & updating shipped qty.")
