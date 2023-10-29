@@ -23,11 +23,11 @@ def create_new_item(item_data):
             'custom_shape', 'custom_diameter', 'custom_thickness', 
             'custom_bore', 'custom_speed', 'custom_more_dimensions', 
             'custom_specification', 'custom_application', 'custom_attach_drawing', 
-            'item_group','gst_hsn_code', 'uom', 'base_rate'
+            'item_group','gst_hsn_code', 'uom', 'base_rate', 'custom_drawing_ref_no'
         ]
         
         for field in fields_to_map:
-            try:
+            if field in item_data:  # Check if the field exists in item_data
                 if field == 'item_group':
                     item.set(field, "All Item Groups")
                 elif field == 'gst_hsn_code':
@@ -41,8 +41,8 @@ def create_new_item(item_data):
                     item.set('valuation_rate', item_data[field])
                 else:
                     item.set(field, item_data[field])
-            except KeyError:
-                logger.error(f"Field {field} not found in item_data {item_data[field]}")
+            else:
+                logger.error(f"Field {field} not found in item_data")
 
         item.insert()
 
