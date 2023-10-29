@@ -1,18 +1,33 @@
 frappe.ui.form.on("Purchase Receipt", {
   onload: function (frm) {
+    console.log("onload");
     frm.fields_dict["items"].grid.get_field("item_code").get_query = function (
       doc,
       cdt,
       cdn
     ) {
       let row = locals[cdt][cdn];
-      if (row.purchase_order) {
-        return {
-          filters: {
-            parent: row.purchase_order,
-          },
-        };
-      }
+      return {
+        query: "sranco.sranco.item_code_query.custom_item_query",
+        filters: {
+          purchase_order: row.purchase_order,
+        },
+      };
+    };
+  },
+  refresh: function (frm) {
+    frm.fields_dict["items"].grid.get_field("item_code").get_query = function (
+      doc,
+      cdt,
+      cdn
+    ) {
+      let row = locals[cdt][cdn];
+      return {
+        query: "sranco.sranco.item_code_query.custom_item_query",
+        filters: {
+          purchase_order: row.purchase_order,
+        },
+      };
     };
   },
   before_submit: function (frm) {
@@ -87,33 +102,51 @@ frappe.ui.form.on("Purchase Receipt", {
 });
 
 frappe.ui.form.on("Purchase Receipt Item", {
+  // Trigger when a new row is added to the "Purchase Receipt Item" table
+  items_add: function (frm, cdt, cdn) {
+    console.log("add");
+    if (frm.doc.items && frm.doc.items.length > 1) {
+      const first_row_purchase_order = frm.doc.items[0].purchase_order;
+      const new_row = locals[cdt][cdn];
+      frappe.model.set_value(
+        new_row.doctype,
+        new_row.name,
+        "purchase_order",
+        first_row_purchase_order
+      );
+    }
+  },
   item_code: function (frm, cdt, cdn) {
     let row = locals[cdt][cdn];
     if (row.purchase_order && row.item_code) {
       frappe.call({
-        method: "frappe.client.get_list",
+        method: "frappe.client.get",
         args: {
-          doctype: "Purchase Order Item",
-          filters: {
-            parent: row.purchase_order,
-            item_code: row.item_code,
-          },
-          fields: ["custom_shipped_qty"],
+          doctype: "Purchase Order",
+          name: row.purchase_order,
         },
         callback: function (response) {
-          if (response.message && response.message.length) {
-            frappe.model.set_value(
-              cdt,
-              cdn,
-              "custom_shipped_qty",
-              response.message[0].custom_shipped_qty
+          if (response.message) {
+            let purchase_order = response.message;
+            let matched_item = purchase_order.items.find(
+              (item) => item.item_code === row.item_code
             );
+
+            if (matched_item) {
+              frappe.model.set_value(
+                cdt,
+                cdn,
+                "custom_shipped_qty",
+                matched_item.custom_shipped_qty
+              );
+            }
           }
         },
       });
     }
   },
   qty: function (frm, cdt, cdn) {
+    validate_combined_qty(frm, cdt, cdn);
     let row = locals[cdt][cdn];
     if (row.custom_shipped_qty < row.qty) {
       frappe.model.set_value(cdt, cdn, "qty", 0);
@@ -187,6 +220,13 @@ frappe.ui.form.on("Purchase Receipt Item", {
 
   custom_use_air_qty: function (frm, cdt, cdn) {
     let row = locals[cdt][cdn];
+    if (has_mode_been_used(frm, "Air", row.item_code)) {
+      frappe.msgprint(
+        "Air quantity for this item code has already been used in another row."
+      );
+      frappe.validated = false;
+      return;
+    }
     if (row.custom_received_air_qty > 0) {
       frappe.msgprint("Air quantity is already received. Choose another mode.");
       frappe.model.set_value(cdt, cdn, "qty", 0);
@@ -198,6 +238,14 @@ frappe.ui.form.on("Purchase Receipt Item", {
 
   custom_use_express_qty: function (frm, cdt, cdn) {
     let row = locals[cdt][cdn];
+
+    if (has_mode_been_used(frm, "Express", row.item_code)) {
+      frappe.msgprint(
+        "Express quantity for this item code has already been used in another row."
+      );
+      frappe.validated = false;
+      return;
+    }
 
     if (row.custom_received_express_qty > 0) {
       frappe.msgprint(
@@ -219,6 +267,14 @@ frappe.ui.form.on("Purchase Receipt Item", {
   custom_use_sea_qty: function (frm, cdt, cdn) {
     let row = locals[cdt][cdn];
 
+    if (has_mode_been_used(frm, "Sea", row.item_code)) {
+      frappe.msgprint(
+        "Sea quantity for this item code has already been used in another row."
+      );
+      frappe.validated = false;
+      return;
+    }
+
     if (row.custom_received_sea_qty > 0) {
       frappe.msgprint("Sea quantity is already received. Choose another mode.");
       frappe.model.set_value(cdt, cdn, "qty", 0);
@@ -229,3 +285,30 @@ frappe.ui.form.on("Purchase Receipt Item", {
     frappe.model.set_value(cdt, cdn, "qty", row.custom_sea_qty);
   },
 });
+
+function validate_combined_qty(frm, cdt, cdn) {
+  let row = locals[cdt][cdn];
+  let total_qty_for_item = 0;
+
+  frm.doc.items.forEach(function (item_row) {
+    if (item_row.item_code === row.item_code) {
+      total_qty_for_item += item_row.qty;
+    }
+  });
+
+  if (total_qty_for_item > row.custom_shipped_qty) {
+    frappe.msgprint(
+      `Total Quantity for ${row.item_code} exceeds the Shipped Quantity.`
+    );
+    frappe.validated = false;
+  }
+}
+
+function has_mode_been_used(frm, mode, item_code) {
+  return frm.doc.items.some(function (item) {
+    return (
+      item.item_code === item_code &&
+      item.custom_selected_transport_mode === mode
+    );
+  });
+}

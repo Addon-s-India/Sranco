@@ -1,5 +1,15 @@
 frappe.ui.form.on("Quotation", {
   onload: function (frm) {
+    frm.fields_dict["items"].grid.get_field("item_code").get_query = function (
+      doc,
+      cdt,
+      cdn
+    ) {
+      return {
+        query: "sranco.sranco.item_code_query.custom_item_query",
+      };
+    };
+
     frm.get_field("custom_not_deliverables").grid.cannot_add_rows = true;
     frm.get_field("custom_not_deliverables").grid.cannot_delete_rows = true;
     // On form load, check and create the rows if needed
@@ -79,7 +89,28 @@ frappe.ui.form.on("Quotation Item", {
   },
   item_code: function (frm, cdt, cdn) {
     var row = locals[cdt][cdn];
-    if (row.item_code && frm.doc.customer) {
+
+    if (row.item_code && frm.doc.party_name) {
+      // fetch item price for customer and item code
+      frappe.call({
+        method: "frappe.client.get",
+        arguments: {
+          doctype: "Item Price",
+          filters: {
+            item_code: row.item_code,
+            customer: frm.doc.customer,
+          },
+        },
+        callback: function (response) {
+          if (response.message) {
+            row.rate = response.message.price_list_rate;
+            row.uom = response.message.stock_uom;
+            frm.refresh_field("items");
+          }
+        },
+      });
+    }
+    if (row.item_code && frm.doc.party_name) {
       // Ensure item_code and customer are present
       frappe.call({
         method: "sranco.api.get_customer_ref_code",

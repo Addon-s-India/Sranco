@@ -53,17 +53,13 @@ frappe.ui.form.on("Ready for Shipment", {
 frappe.ui.form.on("Shipment Table", {
   update_shipment_qty: function (frm, cdt, cdn) {
     let row = locals[cdt][cdn];
-    if (row.update_shipment_qty > row.ready_qty - row.shipment_qty) {
+    if (row.update_shipment_qty !== row.ready_qty - row.shipment_qty) {
       frappe.model.set_value(cdt, cdn, "update_shipment_qty", 0.0);
       frappe.msgprint(
-        "Update Shipment Quantity cannot exceed the Ready Quantity - Shipment Quantity."
+        "Update Shipment Quantity should be equal to the Ready Quantity - Shipment Quantity."
       );
     }
   },
-
-  air_qty: validate_transport_mode_qty,
-  express_qty: validate_transport_mode_qty,
-  sea_qty: validate_transport_mode_qty,
 });
 
 function validate_transport_mode_qty(frm, cdt, cdn) {

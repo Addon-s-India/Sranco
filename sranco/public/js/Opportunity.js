@@ -1,5 +1,14 @@
 frappe.ui.form.on("Opportunity", {
   onload: function (frm) {
+    frm.fields_dict["items"].grid.get_field("item_code").get_query = function (
+      doc,
+      cdt,
+      cdn
+    ) {
+      return {
+        query: "sranco.sranco.item_code_query.custom_item_query",
+      };
+    };
     // Check visibility on load
     update_field_visibility(frm);
   },
@@ -59,6 +68,30 @@ frappe.ui.form.on("Opportunity Item", {
   },
   item_code: function (frm, cdt, cdn) {
     var row = locals[cdt][cdn];
+
+    if (row.item_code && frm.doc.party_name) {
+      // fetch item price for customer and item code
+      frappe.call({
+        method: "frappe.client.get_list",
+        args: {
+          doctype: "Item Price",
+          filters: {
+            item_code: row.item_code,
+            customer: frm.doc.party_name,
+          },
+          fields: ["price_list_rate", "uom"],
+        },
+        callback: function (response) {
+          console.log("response :: ", response.message);
+          if (response.message) {
+            row.rate = response.message[0].price_list_rate;
+            row.uom = response.message[0].uom;
+            frm.refresh_field("items");
+          }
+        },
+      });
+    }
+
     if (row.item_code && frm.doc.party_name) {
       // Ensure item_code and party_name (customer) are present
       frappe.call({

@@ -1,4 +1,16 @@
 frappe.ui.form.on("Sales Order", {
+  onload: function (frm) {
+    frm.fields_dict["items"].grid.get_field("item_code").get_query = function (
+      doc,
+      cdt,
+      cdn
+    ) {
+      return {
+        query: "sranco.sranco.item_code_query.custom_item_query",
+      };
+    };
+  },
+
   custom_order_confirmation: function (frm) {
     // set custom_order_confirmation value in all the items in Sales Order Item table
     frm.doc.items.forEach(function (item) {
