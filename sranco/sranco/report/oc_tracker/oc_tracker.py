@@ -23,7 +23,13 @@ def get_columns():
             "fieldname": "customer",
             "fieldtype": "Link",
             "options": "Customer",
-            "width": 120
+            "width": 140
+        },
+        {
+            "label": _("Customer Name"),
+            "fieldname": "customer_name",
+            "fieldtype": "Data",
+            "width": 160
         },
         {
             "label": _("Seq No."),
@@ -83,7 +89,7 @@ def get_columns():
             "label": _("Shipment Qty in Transit"),
             "fieldname": "shipment_qty_in_transit",
             "fieldtype": "Float",
-            "width": 100
+            "width": 140
         },
         {
             "label": _("Received Qty"),
@@ -113,6 +119,7 @@ def get_data(filters):
         SELECT
             po.custom_order_confirmation as order_confirmation,
             po.customer,
+            cu.customer_name,
             poi.item_code,
             poi.idx as seq_no,
             poi.custom_tn_number,
@@ -131,6 +138,8 @@ def get_data(filters):
             `tabPurchase Order Item` AS poi ON po.name = poi.parent
         JOIN
             `tabItem` AS it ON poi.item_code = it.name
+        JOIN
+            `tabCustomer` AS cu ON po.customer = cu.name
         WHERE
             po.docstatus < 2
             {}
