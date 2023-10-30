@@ -99,7 +99,7 @@ def get_data(filters):
     conditions = ""
 
     if filters.get("order_confirmation"):
-        conditions += " AND po.order_confirmation LIKE %(order_confirmation)s"
+        conditions += " AND po.custom_order_confirmation LIKE %(order_confirmation)s"
     if filters.get("tn_number"):
         conditions += " AND poi.custom_tn_number LIKE %(tn_number)s"
     if filters.get("customer"):
