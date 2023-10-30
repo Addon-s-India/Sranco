@@ -123,7 +123,7 @@ def get_data(filters):
             it.custom_speed as speed,
             poi.qty as order_qty,
             poi.custom_ready_qty as ready_qty,
-            poi.received_qty - poi.custom_shipped_qty as shipment_qty_in_transit,
+            poi.custom_shipped_qty - poi.received_qty as shipment_qty_in_transit,
             poi.received_qty
         FROM
             `tabPurchase Order` AS po
