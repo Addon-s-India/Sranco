@@ -8,7 +8,7 @@ frappe.ui.form.on("Purchase Receipt", {
     ) {
       let row = locals[cdt][cdn];
       return {
-        query: "sranco.sranco.item_code_query.custom_item_query",
+        query: "sranco.item_code_query.custom_item_query",
         filters: {
           purchase_order: row.purchase_order,
         },
@@ -16,19 +16,70 @@ frappe.ui.form.on("Purchase Receipt", {
     };
   },
   refresh: function (frm) {
-    frm.fields_dict["items"].grid.get_field("item_code").get_query = function (
-      doc,
-      cdt,
-      cdn
+    if (
+      frm.doc.items &&
+      frm.doc.items.length > 0 &&
+      frm.doc.items[0].purchase_order
     ) {
-      let row = locals[cdt][cdn];
-      return {
-        query: "sranco.sranco.item_code_query.custom_item_query",
-        filters: {
-          purchase_order: row.purchase_order,
-        },
-      };
-    };
+      frm.add_custom_button("Auto Update", function () {
+        frm.doc.items.forEach(function (item, index) {
+          if (!item.custom_selected_transport_mode) {
+            frappe.call({
+              method: "frappe.client.get",
+              args: {
+                doctype: "Shipment Tracker",
+                filters: {
+                  item_code: item.item_code,
+                  tn_number: item.custom_tn_number,
+                  purchase_order: item.purchase_order,
+                  // Add any other necessary filters
+                },
+              },
+              callback: function (response) {
+                if (response.message) {
+                  let tracker = response.message;
+                  tracker.transport_mode_table.forEach(function (mode_row) {
+                    if (mode_row.received_qty === 0) {
+                      let new_row = frm.add_child("items");
+                      // Copy all properties from the current item except index and name
+                      for (let key in item) {
+                        if (
+                          item.hasOwnProperty(key) &&
+                          key !== "index" &&
+                          key !== "name"
+                        ) {
+                          new_row[key] = item[key];
+                        }
+                      }
+                      // Set additional fields for the new row
+                      new_row.custom_selected_transport_mode = mode_row.mode;
+                      new_row.qty = mode_row.quantity;
+                      new_row.custom_shipment_tracker = tracker.name; // Set the shipment tracker doc in the related row
+                    }
+                  });
+                  frm.refresh_field("items");
+                }
+              },
+            });
+          }
+        });
+
+        // Remove rows without selected_transport_mode or custom_shipment_tracker
+        $.each(frm.doc.items || [], function (i, item) {
+          if (
+            !item.custom_selected_transport_mode ||
+            !item.custom_shipment_tracker ||
+            !item.qty === 0
+          ) {
+            frm
+              .get_field("items")
+              .grid.grid_rows_by_docname[item.name].remove();
+          }
+        });
+
+        frm.refresh_field("items");
+      });
+    }
   },
   before_submit: function (frm) {
     frm.doc.items.forEach(function (item) {

@@ -36,14 +36,13 @@
    "allow_on_submit": 1,
    "fieldname": "received_qty",
    "fieldtype": "Float",
-   "label": "Received Qty",
-   "read_only": 1
+   "label": "Received Qty"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-10-29 13:45:29.814362",
+ "modified": "2023-10-30 12:29:15.413952",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Transport Mode Table",

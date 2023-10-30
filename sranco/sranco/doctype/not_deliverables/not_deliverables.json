@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "item_code",
+  "tn_number",
   "shape",
   "diameter",
   "thickness",
@@ -21,30 +22,35 @@
    "columns": 2,
    "fieldname": "item_code",
    "fieldtype": "Data",
-   "label": "Item Code"
+   "label": "Item Code",
+   "read_only": 1
   },
   {
    "columns": 2,
    "fieldname": "shape",
    "fieldtype": "Data",
-   "label": "Shape"
+   "label": "Shape",
+   "read_only": 1
   },
   {
    "columns": 2,
    "fieldname": "diameter",
    "fieldtype": "Data",
-   "label": "Diameter"
+   "label": "Diameter",
+   "read_only": 1
   },
   {
    "columns": 2,
    "fieldname": "thickness",
    "fieldtype": "Data",
-   "label": "Thickness"
+   "label": "Thickness",
+   "read_only": 1
   },
   {
    "fieldname": "bore",
    "fieldtype": "Data",
-   "label": "Bore"
+   "label": "Bore",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_cwb58",
@@ -53,29 +59,39 @@
   {
    "fieldname": "speed",
    "fieldtype": "Data",
-   "label": "Speed"
+   "label": "Speed",
+   "read_only": 1
   },
   {
    "fieldname": "attach_drawing",
    "fieldtype": "Attach",
-   "label": "Attach Drawing"
+   "label": "Attach Drawing",
+   "read_only": 1
   },
   {
    "fieldname": "more_dimensions",
    "fieldtype": "Data",
-   "label": "More Dimensions"
+   "label": "More Dimensions",
+   "read_only": 1
   },
   {
    "columns": 2,
    "fieldname": "specification",
    "fieldtype": "Data",
-   "label": "Specification"
+   "label": "Specification",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tn_number",
+   "fieldtype": "Data",
+   "label": "TN Number",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-10-26 00:28:02.613401",
+ "modified": "2023-10-30 02:22:46.969703",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Not Deliverables",
