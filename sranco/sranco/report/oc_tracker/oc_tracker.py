@@ -105,9 +105,9 @@ def get_data(filters):
     if filters.get("customer"):
         conditions += " AND po.customer LIKE %(customer)s"
     if filters.get("from_date"):
-        conditions += " AND po.creation >= %(from_date)s"
+        conditions += " AND po.transaction_date >= %(from_date)s"
     if filters.get("to_date"):
-        conditions += " AND po.creation <= %(to_date)s"
+        conditions += " AND po.transaction_date <= %(to_date)s"
         
     data = frappe.db.sql("""
         SELECT
@@ -135,7 +135,7 @@ def get_data(filters):
             po.docstatus < 2
             {}
         ORDER BY
-            po.creation, poi.idx;
+            po.transaction_date, poi.idx;
         """.format(conditions),
         filters,
         as_dict=True,)
