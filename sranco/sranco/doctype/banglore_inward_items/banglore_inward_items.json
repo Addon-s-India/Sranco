@@ -1,0 +1,107 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-10-30 22:42:19.708448",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "tn_number",
+  "customer_item_code",
+  "item_code",
+  "column_break_7o5gr",
+  "item_name",
+  "rate",
+  "uom",
+  "section_break_9c614",
+  "ready_qty",
+  "shipped_qty",
+  "received_qty",
+  "column_break_xc7gl",
+  "accepted_qty",
+  "rejected_qty"
+ ],
+ "fields": [
+  {
+   "fieldname": "tn_number",
+   "fieldtype": "Data",
+   "label": "TN Number"
+  },
+  {
+   "fieldname": "customer_item_code",
+   "fieldtype": "Data",
+   "label": "Customer Item Code"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "options": "Item"
+  },
+  {
+   "fieldname": "column_break_7o5gr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate"
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "Uom",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "section_break_9c614",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "ready_qty",
+   "fieldtype": "Float",
+   "label": "Ready Qty"
+  },
+  {
+   "fieldname": "shipped_qty",
+   "fieldtype": "Float",
+   "label": "Shipped Qty"
+  },
+  {
+   "fieldname": "received_qty",
+   "fieldtype": "Float",
+   "label": "Received Qty"
+  },
+  {
+   "fieldname": "column_break_xc7gl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "accepted_qty",
+   "fieldtype": "Float",
+   "label": "Accepted Qty"
+  },
+  {
+   "fieldname": "rejected_qty",
+   "fieldtype": "Float",
+   "label": "Rejected Qty"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-10-30 22:42:19.708448",
+ "modified_by": "Administrator",
+ "module": "Sranco",
+ "name": "Banglore Inward Items",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
