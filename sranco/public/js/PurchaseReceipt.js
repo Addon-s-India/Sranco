@@ -15,70 +15,156 @@ frappe.ui.form.on("Purchase Receipt", {
       };
     };
   },
+  custom_order_confirmation: function (frm) {
+    // Clear existing items
+    frm.clear_table("items");
+    frm.refresh_field("items");
+
+    // Fetch Purchase Orders based on the custom_order_confirmation field value
+    frappe.call({
+      method: "frappe.client.get_list",
+      args: {
+        doctype: "Purchase Order",
+        filters: {
+          custom_order_confirmation: frm.doc.custom_order_confirmation,
+        },
+        fields: ["name"], // Adjust fields as needed
+      },
+      callback: function (r) {
+        if (r.message && r.message.length > 0) {
+          // Assuming the first matched Purchase Order is the one needed
+          frappe.call({
+            method: "frappe.client.get",
+            args: {
+              doctype: "Purchase Order",
+              name: r.message[0].name,
+            },
+            callback: function (res) {
+              if (res.message) {
+                let purchase_order = res.message;
+
+                // Loop through items in the Purchase Order and add them to the Purchase Receipt
+                purchase_order.items.forEach(function (po_item) {
+                  let new_row = frm.add_child("items");
+                  for (var key in po_item) {
+                    if (
+                      (po_item.hasOwnProperty(key) && key === "qty") ||
+                      key === "item_code" ||
+                      key === "description" ||
+                      key === "uom" ||
+                      key === "rate" ||
+                      key === "amount" ||
+                      key === "warehouse" ||
+                      key === "purchase_order" ||
+                      key === "custom_tn_number" ||
+                      key === "gst_hsn_code" ||
+                      key === "item_group" ||
+                      key === "stock_uom" ||
+                      key === "conversion_factor" ||
+                      key === "schedule_date" ||
+                      key === "purchase_order_item" ||
+                      key === "expense_account" ||
+                      key === "cost_center" ||
+                      key === "item_name"
+                    ) {
+                      new_row[key] = po_item[key];
+                    }
+                  }
+                  // Set the Purchase Order value in each item
+                  new_row.purchase_order = purchase_order.name;
+                });
+
+                frm.refresh_field("items");
+                if (frm.doc.items.length > 0) {
+                  auto_update(frm);
+                }
+                frm.refresh();
+              }
+            },
+          });
+        }
+      },
+    });
+  },
   refresh: function (frm) {
     if (
       frm.doc.items &&
       frm.doc.items.length > 0 &&
       frm.doc.items[0].purchase_order
     ) {
-      frm.add_custom_button("Auto Update", function () {
-        frm.doc.items.forEach(function (item, index) {
-          if (!item.custom_selected_transport_mode) {
-            frappe.call({
-              method: "frappe.client.get",
-              args: {
-                doctype: "Shipment Tracker",
-                filters: {
-                  item_code: item.item_code,
-                  tn_number: item.custom_tn_number,
-                  purchase_order: item.purchase_order,
-                  // Add any other necessary filters
-                },
-              },
-              callback: function (response) {
-                if (response.message) {
-                  let tracker = response.message;
-                  tracker.transport_mode_table.forEach(function (mode_row) {
-                    if (mode_row.received_qty === 0) {
-                      let new_row = frm.add_child("items");
-                      // Copy all properties from the current item except index and name
-                      for (let key in item) {
-                        if (
-                          item.hasOwnProperty(key) &&
-                          key !== "index" &&
-                          key !== "name"
-                        ) {
-                          new_row[key] = item[key];
-                        }
-                      }
-                      // Set additional fields for the new row
-                      new_row.custom_selected_transport_mode = mode_row.mode;
-                      new_row.qty = mode_row.quantity;
-                      new_row.custom_shipment_tracker = tracker.name; // Set the shipment tracker doc in the related row
-                    }
-                  });
-                  frm.refresh_field("items");
-                }
-              },
-            });
-          }
-        });
-
-        // Remove rows without selected_transport_mode or custom_shipment_tracker
-        $.each(frm.doc.items || [], function (i, item) {
-          if (
-            !item.custom_selected_transport_mode ||
-            !item.custom_shipment_tracker ||
-            !item.qty === 0
-          ) {
-            frm
-              .get_field("items")
-              .grid.grid_rows_by_docname[item.name].remove();
-          }
-        });
-
-        frm.refresh_field("items");
-      });
+      // frm.add_custom_button("Auto Update", function () {
+      //   frm.doc.items.forEach(function (item, index) {
+      //     if (!item.custom_selected_transport_mode) {
+      //       frappe.call({
+      //         method: "frappe.client.get_list",
+      //         args: {
+      //           doctype: "Shipment Tracker",
+      //           filters: {
+      //             item_code: item.item_code,
+      //             tn_number: item.custom_tn_number,
+      //             purchase_order: item.purchase_order,
+      //             // Add any other necessary filters
+      //           },
+      //         },
+      //         callback: function (response) {
+      //           if (response.message) {
+      //             response.message.forEach(function (tracker_doc) {
+      //               frappe.call({
+      //                 method: "frappe.client.get",
+      //                 args: {
+      //                   doctype: "Shipment Tracker",
+      //                   name: tracker_doc.name,
+      //                 },
+      //                 callback: function (r) {
+      //                   console.log(r.message);
+      //                   const tracker = r.message;
+      //                   tracker.transport_mode_table.forEach(function (
+      //                     mode_row
+      //                   ) {
+      //                     if (mode_row.received_qty === 0) {
+      //                       var new_row = frm.add_child("items");
+      //                       // Copy all properties from the current item except index and name
+      //                       for (var key in item) {
+      //                         if (
+      //                           item.hasOwnProperty(key) &&
+      //                           key !== "idx" &&
+      //                           key !== "name"
+      //                         ) {
+      //                           new_row[key] = item[key];
+      //                         } else if (key === "idx") {
+      //                           console.log("row index :: ", index);
+      //                         }
+      //                       }
+      //                       // Set additional fields for the new row
+      //                       new_row.custom_selected_transport_mode =
+      //                         mode_row.mode;
+      //                       new_row.qty = mode_row.quantity;
+      //                       new_row.custom_shipment_tracker = tracker.name; // Set the shipment tracker doc in the related row
+      //                     }
+      //                   });
+      //                   frm.refresh_field("items");
+      //                 },
+      //               });
+      //             });
+      //           }
+      //         },
+      //       });
+      //     }
+      //   });
+      //   // Remove rows without selected_transport_mode or custom_shipment_tracker
+      //   $.each(frm.doc.items || [], function (i, item) {
+      //     if (
+      //       !item.custom_selected_transport_mode ||
+      //       !item.custom_shipment_tracker ||
+      //       !item.qty === 0
+      //     ) {
+      //       frm
+      //         .get_field("items")
+      //         .grid.grid_rows_by_docname[item.name].remove();
+      //     }
+      //   });
+      //   frm.refresh_field("items");
+      // });
     }
   },
   before_submit: function (frm) {
@@ -362,4 +448,79 @@ function has_mode_been_used(frm, mode, item_code) {
       item.custom_selected_transport_mode === mode
     );
   });
+}
+
+function auto_update(frm) {
+  frm.doc.items.forEach(function (item, index) {
+    if (!item.custom_selected_transport_mode) {
+      frappe.call({
+        method: "frappe.client.get_list",
+        args: {
+          doctype: "Shipment Tracker",
+          filters: {
+            item_code: item.item_code,
+            tn_number: item.custom_tn_number,
+            purchase_order: item.purchase_order,
+            // Add any other necessary filters
+          },
+        },
+        callback: function (response) {
+          if (response.message) {
+            response.message.forEach(function (tracker_doc) {
+              frappe.call({
+                method: "frappe.client.get",
+                args: {
+                  doctype: "Shipment Tracker",
+                  name: tracker_doc.name,
+                },
+                callback: function (r) {
+                  console.log(r.message);
+                  const tracker = r.message;
+                  tracker.transport_mode_table.forEach(function (mode_row) {
+                    if (mode_row.received_qty === 0) {
+                      var new_row = frm.add_child("items");
+                      // Copy all properties from the current item except index and name
+                      for (var key in item) {
+                        if (
+                          item.hasOwnProperty(key) &&
+                          key !== "idx" &&
+                          key !== "name"
+                        ) {
+                          new_row[key] = item[key];
+                        } else if (key === "idx") {
+                          console.log("row index :: ", index);
+                        }
+                      }
+                      // Set additional fields for the new row
+                      new_row.custom_selected_transport_mode = mode_row.mode;
+                      new_row.qty = mode_row.quantity;
+                      new_row.custom_shipment_tracker = tracker.name; // Set the shipment tracker doc in the related row
+                    } else {
+                      frappe.msgprint(
+                        `Item <b>${item.item_code}</b> Mode <b>${mode_row.mode}</b>: All quantities are already received.`
+                      );
+                    }
+                  });
+                  frm.refresh_field("items");
+                },
+              });
+            });
+          }
+        },
+      });
+    }
+  });
+
+  // Remove rows without selected_transport_mode or custom_shipment_tracker
+  $.each(frm.doc.items || [], function (i, item) {
+    if (
+      !item.custom_selected_transport_mode ||
+      !item.custom_shipment_tracker ||
+      !item.qty === 0
+    ) {
+      frm.get_field("items").grid.grid_rows_by_docname[item.name].remove();
+    }
+  });
+
+  frm.refresh_field("items");
 }
