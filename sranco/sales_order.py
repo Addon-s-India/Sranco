@@ -55,22 +55,42 @@ def sales_order_on_submit(doc, method):
     
     # Loop through Sales Order items and append to Purchase Order
     for item in doc.items:
-        po_item = po.append('items', {})
-        po_item.item_code = item.item_code
-        po_item.expected_delivery_date = doc.delivery_date
-        po_item.item_name = item.item_name
-        po_item.description = item.description
-        po_item.qty = item.qty
-        po_item.uom = item.uom
-        po_item.rate = item.rate
-        po_item.custom_tn_number = item.custom_tn_number
-        po_item.custom_customer_item_code = item.custom_customer_item_code
-        po_item.sales_order = doc.name  # Linking Sales Order to Purchase Order items
+        if not item.purchase_order:
+            po_item = po.append('items', {})
+            po_item.item_code = item.item_code
+            po_item.expected_delivery_date = doc.delivery_date
+            po_item.item_name = item.item_name
+            po_item.description = item.description
+            po_item.qty = item.qty
+            po_item.uom = item.uom
+            po_item.rate = item.rate
+            po_item.custom_tn_number = item.custom_tn_number
+            po_item.custom_customer_item_code = item.custom_customer_item_code
+            po_item.sales_order = doc.name  # Linking Sales Order to Purchase Order items
     
     # Save and submit the Purchase Order
     po.insert()
     po.save()
+    for item in doc.items:
+        if not item.purchase_order:
+            item.purchase_order = po.name
     po.submit()
+    
+    # Update Stock Order items with sales quantities
+    for item in doc.items:
+        if item.custom_stock_order:
+            stock_order_items = frappe.get_all(
+                "Stock Order Item",
+                filters={"parent": item.custom_stock_order, "item_code": item.item_code},
+                fields=["name", "sales_qty"],
+            )
+            for stock_order_item in stock_order_items:
+                stock_order = frappe.get_doc("Stock Order Item", stock_order_item.name)
+                stock_order.sales_qty += item.qty
+                stock_order.save()
+                frappe.msgprint(f"Updated Stock Order {stock_order.name} with sales quantity {item.qty}")
+            
+            
     logger.info(f"Purchase Order {po.name} created successfully!")
 
     # Add a comment in the Sales Order indicating the Purchase Order creation

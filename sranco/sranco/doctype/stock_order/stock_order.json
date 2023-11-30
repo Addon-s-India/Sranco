@@ -11,6 +11,7 @@
   "customer",
   "customer_name",
   "order_confirmation",
+  "purchase_order",
   "order_attach",
   "column_break_poczo",
   "date",
@@ -68,12 +69,19 @@
    "options": "Stock Order",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "purchase_order",
+   "fieldtype": "Data",
+   "label": "Purchase Order",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-10-31 17:37:50.617182",
+ "modified": "2023-11-30 12:50:06.884873",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Stock Order",
