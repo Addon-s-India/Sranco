@@ -67,7 +67,7 @@ frappe.ui.form.on("Purchase Receipt", {
                       key === "item_name"
                     ) {
                       new_row[key] = po_item[key];
-                    } else if (key === "purchase_order_item") {
+                    } else if (key === "name") {
                       new_row["purchase_order_item"] = po_item["name"];
                     }
                   }
