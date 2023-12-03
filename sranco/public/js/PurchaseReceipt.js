@@ -62,12 +62,13 @@ frappe.ui.form.on("Purchase Receipt", {
                       key === "stock_uom" ||
                       key === "conversion_factor" ||
                       key === "schedule_date" ||
-                      key === "purchase_order_item" ||
                       key === "expense_account" ||
                       key === "cost_center" ||
                       key === "item_name"
                     ) {
                       new_row[key] = po_item[key];
+                    } else if (key === "purchase_order_item") {
+                      new_row["purchase_order_item"] = po_item["name"];
                     }
                   }
                   // Set the Purchase Order value in each item
@@ -224,7 +225,7 @@ frappe.ui.form.on("Purchase Receipt", {
           args: {
             shipment_tracker: item.custom_shipment_tracker,
             transport_mode: item.custom_selected_transport_mode,
-            received_qty: item.qty,
+            received_qty: item.received_qty,
           },
           async: false,
           callback: function (response) {
