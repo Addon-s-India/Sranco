@@ -80,12 +80,12 @@ def sales_order_on_submit(doc, method):
     for item in doc.items:
         if item.custom_stock_order:
             stock_order_items = frappe.get_all(
-                "Stock Order Item",
+                "Stock Order Items",
                 filters={"parent": item.custom_stock_order, "item_code": item.item_code},
                 fields=["name", "sales_qty"],
             )
             for stock_order_item in stock_order_items:
-                stock_order = frappe.get_doc("Stock Order Item", stock_order_item.name)
+                stock_order = frappe.get_doc("Stock Order Items", stock_order_item.name)
                 stock_order.sales_qty += item.qty
                 stock_order.save()
                 frappe.msgprint(f"Updated Stock Order {stock_order.name} with sales quantity {item.qty}")
