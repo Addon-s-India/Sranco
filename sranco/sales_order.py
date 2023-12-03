@@ -80,7 +80,7 @@ def sales_order_on_submit(doc, method):
     for item in doc.items:
         if item.custom_stock_order:
             stock_order_items = frappe.get_all(
-                "Stock Order Items",
+                "Stock Order Item",
                 filters={"parent": item.custom_stock_order, "item_code": item.item_code},
                 fields=["name", "sales_qty"],
             )
