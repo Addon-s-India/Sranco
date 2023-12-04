@@ -48,15 +48,27 @@ frappe.ui.form.on("Sales Order", {
   custom_order_confirmation: function (frm) {
     // set custom_order_confirmation value in all the items in Sales Order Item table
     frm.doc.items.forEach(function (item) {
-      item.custom_order_confirmation = frm.doc.custom_order_confirmation;
+      if (!item.custom_order_confirmation) {
+        item.custom_order_confirmation = frm.doc.custom_order_confirmation;
+      }
     });
     frm.refresh_field("items");
   },
   before_submit: function (frm) {
     // Check if custom_order_confirmation is empty
-    if (!frm.doc.custom_order_confirmation) {
-      frappe.msgprint(__("Please enter the Order Confirmation."));
-      frappe.validated = false; // Prevent submission
+    // if (!frm.doc.custom_order_confirmation) {
+    //   frappe.msgprint(__("Please enter the Order Confirmation."));
+    //   frappe.validated = false; // Prevent submission
+    // }
+    if (items.length > 0) {
+      items.forEach(function (item) {
+        if (!item.custom_order_confirmation) {
+          frappe.msgprint(
+            __("Please enter the Order Confirmation for item " + item.item_code)
+          );
+          frappe.validated = false; // Prevent submission
+        }
+      });
     }
   },
 });
