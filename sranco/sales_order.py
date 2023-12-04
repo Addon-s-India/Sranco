@@ -43,6 +43,13 @@ def sales_order_on_submit(doc, method):
     if not doc.items:
         return
     
+    # Check if any item in Sales Order does not have an associated Purchase Order
+    has_item_without_po = any(not item.purchase_order for item in doc.items)
+    if not has_item_without_po:
+        # All items have a Purchase Order, so skip the PO creation
+        frappe.msgprint(_("All items have a Purchase Order, so skipping PO creation"))
+        return
+    
     # Create a new Purchase Order
     po = frappe.new_doc("Purchase Order")
     
