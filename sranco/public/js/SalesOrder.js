@@ -61,7 +61,7 @@ frappe.ui.form.on("Sales Order", {
     //   frappe.validated = false; // Prevent submission
     // }
     if (frm.doc.items.length > 0) {
-      items.forEach(function (item) {
+      frm.doc.items.forEach(function (item) {
         if (!item.custom_order_confirmation) {
           frappe.msgprint(
             __("Please enter the Order Confirmation for item " + item.item_code)
