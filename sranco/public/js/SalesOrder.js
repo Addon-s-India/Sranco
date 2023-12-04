@@ -159,6 +159,8 @@ function get_qty_from_stock_order(frm) {
                 }
               }
               frm.refresh_fields();
+              // refresh items
+              frm.refresh_field("items");
             }
           },
         });
