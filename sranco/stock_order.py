@@ -39,9 +39,10 @@ def stock_order_on_submit(doc, method):
         po_item.custom_stock_order = doc.name  # Linking Sales Order to Purchase Order items
     
     # Save and submit the Purchase Order
-    po.insert()
-    po.save()
-    po.submit()
+    po.flags.ignore_permissions = True  # Ignore permissions during insert
+    po.save()  # Save the PO; insert and save are equivalent here
+    po.submit()  # Submit the PO
+
     logger.info(f"Purchase Order {po.name} created successfully!")
 
     # Add a comment in the Sales Order indicating the Purchase Order creation
@@ -54,7 +55,7 @@ def stock_order_on_submit(doc, method):
     doc.purchase_order = po.name
 
     # Save the Stock Order to update the purchase_order field
-    doc.save()
+    # doc.save()
 
 
 @frappe.whitelist()

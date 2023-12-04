@@ -16,18 +16,33 @@ frappe.ui.form.on("Sales Order", {
       }
     );
   },
-  refresh: function (frm) {
-    $.each(cur_frm.doc.items, function (i, item) {
-      if (item.custom_stock_order.length > 0) {
-        $("div[data-fieldname=shipping_list]")
-          .find(format('div.grid-row[data-idx="{0}"]', [item.idx]))
-          .css({ "background-color": "#FF0000 !important" });
-        $("div[data-fieldname=shipping_list]")
-          .find(format('div.grid-row[data-idx="{0}"]', [item.idx]))
-          .find(".grid-static-col")
-          .css({ "background-color": "#FF0000 !important" });
-      }
-    });
+  // refresh: function (frm) {
+  //   $.each(cur_frm.doc.items, function (i, item) {
+  //     if (item.custom_stock_order.length > 0) {
+  //       $("div[data-fieldname=shipping_list]")
+  //         .find(format('div.grid-row[data-idx="{0}"]', [item.idx]))
+  //         .css({ "background-color": "#FF0000 !important" });
+  //       $("div[data-fieldname=shipping_list]")
+  //         .find(format('div.grid-row[data-idx="{0}"]', [item.idx]))
+  //         .find(".grid-static-col")
+  //         .css({ "background-color": "#FF0000 !important" });
+  //     }
+  //   });
+
+  refresh: function (frm, cdt, cdn) {
+    console.log("/////////");
+    cur_frm.fields_dict["items"].$wrapper
+      .find(".grid-body .rows")
+      .find(".grid-row")
+      .each(function (i, item) {
+        let d =
+          locals[cur_frm.fields_dict["items"].grid.doctype][
+            $(item).attr("data-name")
+          ];
+        if (d["custom_stock_order"].length > 0) {
+          $(item).find(".grid-row-check").css({ "background-color": "green" });
+        }
+      });
   },
 
   custom_order_confirmation: function (frm) {
