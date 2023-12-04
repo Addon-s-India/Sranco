@@ -55,7 +55,7 @@ def stock_order_on_submit(doc, method):
     doc.purchase_order = po.name
 
     # Save the Stock Order to update the purchase_order field
-    # doc.save()
+    doc.save()
 
 
 @frappe.whitelist()
