@@ -66,8 +66,9 @@ def get_qty_from_stock_order(tn_number, required_qty):
     try:
         stock_orders = frappe.get_all(
             "Stock Order Items",
-            filters={"tn_number": tn_number},
+            filters={"tn_number": tn_number, "docstatus": 1},
             fields=["qty", "purchase_order", "order_confirmation", "parent", "sales_qty"],
+            order_by="creation asc",
         )
         logger.info(f"stock_orders: {stock_orders}")
         
@@ -107,3 +108,31 @@ def get_qty_from_stock_order(tn_number, required_qty):
     except Exception as e:
         logger.error(f"Error: {e}")
         return None
+
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def custom_stock_order_query(doctype, txt, searchfield, start, page_len, filters):
+    logger.info(f"txt: {txt}, searchfield: {searchfield}, start: {start}, page_len: {page_len}, filters: {filters}")
+    customer_filter = ""
+    if filters.get('customer'):
+        customer_filter = "AND so.customer = %(customer)s"
+
+    return frappe.db.sql(f"""
+        SELECT so.name, so.order_confirmation, so.date
+        FROM `tabStock Order` so
+        JOIN `tabStock Order Items` soi ON so.name = soi.parent
+        WHERE so.docstatus = 1
+            AND soi.item_code = %(item_code)s
+            {customer_filter}
+            AND (so.{searchfield} LIKE %(txt)s)
+        ORDER BY so.date ASC, so.name ASC
+        LIMIT %(start)s, %(page_len)s
+    """, {
+        'item_code': filters.get('item_code'),
+        'customer': filters.get('customer'),
+        'txt': "%{}%".format(txt),
+        '_txt': txt.replace("%", ""),
+        'start': start,
+        'page_len': page_len
+    })
