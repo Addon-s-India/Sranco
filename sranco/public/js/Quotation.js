@@ -75,8 +75,10 @@ frappe.ui.form.on("Quotation Item", {
     var row = locals[cdt][cdn];
     manage_not_deliverables_row(frm, row);
 
-    if (row.custom_not_a_tyrolit_specification == 0) {
-      frm.fields_dict["items"].grid.toggle_reqd("custom_tn_number", true);
+    if (row.custom_not_a_tyrolit_specification == 1) {
+      // delete the row from the items table
+      frm.fields_dict["items"].grid.grid_rows_by_docname[cdn].remove();
+      // frm.fields_dict["items"].grid.toggle_reqd("custom_tn_number", true);
     }
   },
   custom_snc_commision_: function (frm, cdt, cdn) {
@@ -94,7 +96,7 @@ frappe.ui.form.on("Quotation Item", {
       // fetch item price for customer and item code
       frappe.call({
         method: "frappe.client.get",
-        arguments: {
+        args: {
           doctype: "Item Price",
           filters: {
             item_code: row.item_code,
@@ -126,6 +128,73 @@ frappe.ui.form.on("Quotation Item", {
               "custom_customer_item_code",
               response.message
             );
+          }
+        },
+      });
+    }
+  },
+  custom_tn_number: function (frm, cdt, cdn) {
+    // look for the item which has matching custom_tn_number and if found set the item_code and item_name
+    var row = locals[cdt][cdn];
+    if (row.custom_tn_number) {
+      frappe.call({
+        method: "frappe.client.get_list",
+        args: {
+          doctype: "Item",
+          filters: {
+            custom_tn_number: row.custom_tn_number,
+          },
+          fields: ["name", "item_name"],
+        },
+        callback: function (response) {
+          console.log("response :: ", response.message);
+          if (response.message.length > 0) {
+            frappe.model.set_value(
+              cdt,
+              cdn,
+              "item_code",
+              response.message[0].name
+            );
+            frappe.model.set_value(
+              cdt,
+              cdn,
+              "item_name",
+              response.message[0].item_name
+            );
+          }
+          // if there is no item with matching custom_tn_number then clear the item_code and item_name and craete new item
+          else {
+            // frappe.model.set_value(cdt, cdn, "item_code", "");
+            // frappe.model.set_value(cdt, cdn, "item_name", "");
+            // create new item for the tn number
+            frappe.call({
+              method: "sranco.api.create_new_item",
+              args: {
+                item_data: row,
+              },
+              callback: function (response) {
+                console.log("response from new item:: ", response.message);
+                if (response.message) {
+                  // print the message
+                  frappe.msgprint(
+                    "New Item Created" + response.message.item_code
+                  );
+                  frappe.model.set_value(
+                    cdt,
+                    cdn,
+                    "item_code",
+                    response.message.item_code
+                  );
+                  frappe.model.set_value(
+                    cdt,
+                    cdn,
+                    "item_name",
+                    response.message.item_name
+                  );
+                  frm.refresh_field("items");
+                }
+              },
+            });
           }
         },
       });

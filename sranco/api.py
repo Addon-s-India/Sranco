@@ -9,6 +9,7 @@ logger = frappe.logger("Sranco_logs", allow_site=True, file_count=1)
 @frappe.whitelist()
 def create_new_item(item_data):
     # Parse the string into a dictionary
+    logger.info(f"Item data is :: {item_data}")
     item_data = json.loads(item_data)
     
     # Create a new item
@@ -23,7 +24,7 @@ def create_new_item(item_data):
             'custom_shape', 'custom_diameter', 'custom_thickness', 
             'custom_bore', 'custom_speed', 'custom_more_dimensions', 
             'custom_specification', 'custom_application', 'custom_attach_drawing', 
-            'item_group','gst_hsn_code', 'uom', 'base_rate', 'custom_drawing_ref_no'
+            'item_group','gst_hsn_code', 'uom', 'base_rate', 'custom_drawing_ref_no', 'custom_tn_number'
         ]
         
         for field in fields_to_map:

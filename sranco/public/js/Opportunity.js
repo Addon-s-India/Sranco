@@ -19,28 +19,28 @@ frappe.ui.form.on("Opportunity", {
   before_save: function (frm) {
     frm.doc.items.forEach(function (item) {
       // Existing logic for custom new enquiry
-      if (
-        item.custom_new_enquiry == 1 &&
-        (!item.item_code || !item.item_name)
-      ) {
-        // Call the custom API method to create a new item and update the Opportunity Item
-        frappe.call({
-          method: "sranco.api.create_new_item",
-          args: {
-            item_data: item,
-          },
-          async: false,
-          callback: function (response) {
-            if (response.message) {
-              item.item_code = response.message.item_code;
-              item.item_name = response.message.item_name;
-            }
-          },
-        });
-      }
+      // if (
+      //   item.custom_new_enquiry == 1 &&
+      //   (!item.item_code || !item.item_name)
+      // ) {
+      //   // Call the custom API method to create a new item and update the Opportunity Item
+      //   frappe.call({
+      //     method: "sranco.api.create_new_item",
+      //     args: {
+      //       item_data: item,
+      //     },
+      //     async: false,
+      //     callback: function (response) {
+      //       if (response.message) {
+      //         item.item_code = response.message.item_code;
+      //         item.item_name = response.message.item_name;
+      //       }
+      //     },
+      //   });
+      // }
 
       // New logic for updating ref_code in Customer Items
-      if (item.custom_customer_item_code) {
+      if (item.custom_customer_item_code && item.item_code) {
         frappe.call({
           method: "sranco.api.update_customer_item_ref_code",
           args: {
@@ -126,8 +126,14 @@ function set_field_visibility(row, frm) {
   if (row.custom_new_enquiry == 1) {
     frm.fields_dict["items"].grid.toggle_display("item_code", false);
     frm.fields_dict["items"].grid.toggle_display("item_name", false);
+    // clear item_code and item_name
+    row.item_code = "";
+    row.item_name = "";
   } else {
     frm.fields_dict["items"].grid.toggle_display("item_code", true);
     frm.fields_dict["items"].grid.toggle_display("item_name", true);
+    // clear item code and item name
+    row.item_code = "";
+    row.item_name = "";
   }
 }
