@@ -151,8 +151,9 @@ frappe.ui.form.on("Sales Order Item", {
       method: "frappe.client.get_list",
       args: {
         doctype: "Stock Order",
-        filters: { name: row.custom_stock_order },
+        filters: { name: row.custom_stock_order, docstatus: 1 },
         fields: ["name", "purchase_order", "order_confirmation"],
+        order_by: "creation asc",
       },
       callback: function (r) {
         if (r.message) {
@@ -216,8 +217,12 @@ frappe.ui.form.on("Sales Order Item", {
       method: "frappe.client.get_list",
       args: {
         doctype: "Stock Order",
-        filters: { order_confirmation: row.custom_order_confirmation },
+        filters: {
+          order_confirmation: row.custom_order_confirmation,
+          docstatus: 1,
+        },
         fields: ["name", "purchase_order"],
+        order_by: "creation asc",
       },
       callback: function (r) {
         if (r.message) {
