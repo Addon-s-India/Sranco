@@ -147,11 +147,12 @@ def get_item_details(filters):
             ip.item_code,
             ip.item_name,
             ip.customer,
-            ip.custom_customer_name as customer_name,
+            c.customer_name,
             ip.price_list_rate as current_rate
         FROM
             `tabItem Price` ip
         JOIN `tabItem` i ON ip.item_code = i.name
+        JOIN `tabCustomer` c ON ip.customer = c.name
         WHERE {conditions}
     """.format(conditions=conditions or "1=1"), filters, as_dict=1)
 
