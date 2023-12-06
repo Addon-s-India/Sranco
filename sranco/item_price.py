@@ -18,7 +18,7 @@ def validate(doc, method):
         original_doc = frappe.get_doc('Item Price', doc.name)
         
         # Compare the price_list_rate of the current doc with the original one
-        if original_doc.price_list_rate != doc.price_list_rate:
+        if round(original_doc.price_list_rate, 2) != round(doc.price_list_rate, 2):
             # Price has changed, so append a new row to the Price History child table
             logger.info(f"Validate method called. Price has changed for {doc.item_code} from {original_doc.price_list_rate} to {doc.price_list_rate}")
             doc.append('custom_price_history', {

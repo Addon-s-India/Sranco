@@ -40,6 +40,14 @@ frappe.ui.form.on("Sales Order", {
   //   });
 
   refresh: function (frm, cdt, cdn) {
+    if (frm.doc.docstatus !== 1) {
+      frm.fields_dict["items"].grid.add_custom_button(
+        __("Get Qty from Stock Order"),
+        function () {
+          get_qty_from_stock_order(frm);
+        }
+      );
+    }
     console.log("/////////");
     cur_frm.fields_dict["items"].$wrapper
       .find(".grid-body .rows")

@@ -15,18 +15,20 @@ def item_price_update(doc, method):
     # Check if Sales Order items are available
     for item in doc.items:
         item_price = frappe.db.exists('Item Price', {'item_code': item.item_code, 'price_list': 'Standard Selling', 'customer': doc.customer})
-        
+        logger.info(f"Item Price {item_price} exists")
         # If an Item Price exists
         if item_price:
+            logger.info(f"Item Price in if condition {item_price} exists")
             existing_item_price = frappe.get_doc('Item Price', item_price)
             # Check if rate is different
-            if existing_item_price.price_list_rate != item.rate:
+            if round(existing_item_price.price_list_rate, 2) != round(item.rate, 2):
                 existing_item_price.price_list_rate = item.rate
                 logger.info(f"Updating Item Price {existing_item_price.item_code} with rate {item.rate}")
                 frappe.msgprint(f"Updated Item Price {existing_item_price.item_code} with rate {item.rate}")
                 existing_item_price.save()
         # If no Item Price exists
         else:
+            logger.info(f"Item Price in else condition {item_price} exists")
             new_item_price = frappe.new_doc('Item Price')
             new_item_price.price_list = 'Standard Selling'
             new_item_price.item_code = item.item_code

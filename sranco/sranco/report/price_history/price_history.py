@@ -17,6 +17,12 @@ def execute(filters=None):
 def get_columns_and_data(filters):
     columns = [
         {
+            "fieldname": "tn_number",
+            "label": "TN Number",
+            "fieldtype": "Data",
+            "width": 200
+        },
+        {
             "fieldname": "item_code",
             "label": "Item Code",
             "fieldtype": "Link",
@@ -59,6 +65,12 @@ def get_columns_and_data(filters):
             "fieldtype": "Link",
             "options": "Customer",
             "width": 200
+        },
+        {
+            "fieldname": "customer_name",
+            "label": "Customer Name",
+            "fieldtype": "Data",
+            "width": 200
         }
     ]
 
@@ -70,15 +82,20 @@ def get_columns_and_data(filters):
         doc = item.get("docname")
         itemCode = item.get("item_code")
         itemName = item.get("item_name")
+        tnNumber = item.get("tn_number")
         customer = item.get("customer")
+        customer_name = item.get("customer_name")
         row = {
             "docname": doc,
+            "tn_number": tnNumber,
             "item_code": itemCode,
             "item_name": itemName,
             "price": f"<b>{current_price}</b>",
             "changed_by": f"<b>Current Price</b>",
             "date_time": None,
+            "percent_change": None,
             "customer": customer,
+            "customer_name": customer_name
         }
         data.append(row)
 
@@ -88,13 +105,15 @@ def get_columns_and_data(filters):
         for index, history in enumerate(price_history_data):
             row = {
                 "docname": "",
+                "tn_number": "",
                 "item_code": "",
                 "item_name": "",
                 "price": history.get("price"),
                 "changed_by": history.get("changed_by"),
                 "date_time": history.get("date_time"),
                 "percent_change": None,  # Set to None initially
-                "customer": ""
+                "customer": "",
+                "customer_name": ""
             }
             
             # Compute the percent change if not the last item in the list
@@ -124,9 +143,11 @@ def get_item_details(filters):
     return frappe.db.sql("""
         SELECT DISTINCT
             ip.name as docname,
+            i.custom_tn_number as tn_number,
             ip.item_code,
             ip.item_name,
             ip.customer,
+            ip.custom_customer_name as customer_name,
             ip.price_list_rate as current_rate
         FROM
             `tabItem Price` ip
