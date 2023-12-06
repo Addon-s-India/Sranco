@@ -134,6 +134,9 @@ function fetch_purchase_order_items(purchase_order_data) {
             purchase_order: purchase_order.name,
             sales_order: item.sales_order,
             order_confirmation: purchase_order.custom_order_confirmation,
+            air_qty: 0,
+            express_qty: 0,
+            sea_qty: 0,
           });
         });
         cur_frm.set_value("sales_order", sales_order);
