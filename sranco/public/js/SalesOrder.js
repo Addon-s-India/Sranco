@@ -293,72 +293,92 @@ frappe.ui.form.on("Sales Order Item", {
 });
 
 function get_qty_from_stock_order(frm) {
-  if (frm.doc.items.length > 0) {
+  if (frm.doc.items.length > 0 && frm.doc.docstatus !== 1) {
     console.log("items", frm.doc.items);
-    frm.doc.items.forEach(function (item) {
-      if (item.custom_tn_number) {
-        console.log("tn_number", item.custom_tn_number);
+    frm.doc.items.forEach(function (original_item) {
+      if (original_item.custom_tn_number) {
+        console.log("tn_number", original_item.custom_tn_number);
         frappe.call({
           method: "sranco.stock_order.get_qty_from_stock_order",
           args: {
-            tn_number: item.custom_tn_number,
-            required_qty: item.qty, // Pass item.qty as required_qty
+            tn_number: original_item.custom_tn_number,
+            required_qty: original_item.qty,
           },
           callback: function (response) {
-            console.log("response", response, item.qty);
-            if (response.message) {
-              if (parseFloat(response.message.qty) === parseFloat(item.qty)) {
-                // Quantity matches, use the provided data
-                item.custom_stock_order = response.message.stock_order;
-                item.purchase_order = response.message.purchase_order;
-                item.custom_order_confirmation =
-                  response.message.order_confirmation;
-              } else if (
-                parseFloat(response.message.qty) < parseFloat(item.qty)
-              ) {
-                const original_item = item;
-                // Quantity is less, update the current row with the response qty
-                const original_qty = item.qty;
-                item.qty = response.message.qty;
-                item.custom_stock_order = response.message.stock_order;
-                item.purchase_order = response.message.purchase_order;
-                item.custom_order_confirmation =
-                  response.message.order_confirmation;
+            console.log("response", response, original_item.qty);
+            const itemQty = original_item.qty;
+            if (response.message && response.message.length > 0) {
+              let totalQtyCovered = 0;
+              response.message.forEach(function (stock_order, index) {
+                totalQtyCovered += parseFloat(stock_order.qty);
 
-                // Create a new row for the remaining quantity
-                // Create a new row for the remaining quantity
+                if (index === 0) {
+                  // Update the current row with the first stock order details
+                  original_item.qty = stock_order.qty;
+                  original_item.custom_stock_order = stock_order.stock_order;
+                  original_item.purchase_order = stock_order.purchase_order;
+                  original_item.custom_order_confirmation =
+                    stock_order.order_confirmation;
+                } else {
+                  // Create new rows for additional stock orders
+                  var new_item = frm.add_child("items");
+                  for (var key in original_item) {
+                    if (
+                      original_item.hasOwnProperty(key) &&
+                      ![
+                        "qty",
+                        "custom_stock_order",
+                        "purchase_order",
+                        "custom_order_confirmation",
+                        "name",
+                        "idx",
+                      ].includes(key)
+                    ) {
+                      new_item[key] = original_item[key];
+                    }
+                  }
+                  new_item.qty = stock_order.qty; // Set qty from stock order
+                  new_item.custom_stock_order = stock_order.stock_order;
+                  new_item.purchase_order = stock_order.purchase_order;
+                  new_item.custom_order_confirmation =
+                    stock_order.order_confirmation;
+                }
+              });
+
+              // Check if there is remaining quantity after utilizing all stock orders
+              const remainingQty = parseFloat(itemQty) - totalQtyCovered;
+              if (remainingQty > 0) {
                 var new_item = frm.add_child("items");
-
-                // Copy values from original_item to new_item
                 for (var key in original_item) {
-                  console.log("key", key, original_item[key]);
                   if (
                     original_item.hasOwnProperty(key) &&
-                    key !== "qty" &&
-                    key !== "custom_stock_order" &&
-                    key !== "purchase_order" &&
-                    key !== "custom_order_confirmation" &&
-                    key !== "name" &&
-                    key !== "idx"
+                    ![
+                      "qty",
+                      "custom_stock_order",
+                      "purchase_order",
+                      "custom_order_confirmation",
+                      "name",
+                      "idx",
+                    ].includes(key)
                   ) {
                     new_item[key] = original_item[key];
-                  } else if (key === "qty") {
-                    console.log("original_qty", original_qty);
-                    const remaining_qty =
-                      parseFloat(original_qty) -
-                      parseFloat(response.message.qty);
-                    new_item[key] = remaining_qty;
                   }
                 }
+                new_item.qty = remainingQty; // Set remaining qty
+                // Reset stock order related fields for the remaining quantity
+                new_item.custom_stock_order = "";
+                new_item.purchase_order = "";
+                new_item.custom_order_confirmation = "";
               }
+
               frm.refresh_fields();
-              // refresh items
               frm.refresh();
             }
           },
         });
       }
-      frm.refresh_fields();
     });
+  } else {
+    frappe.msgprint(__("The sales order is already submitted."));
   }
 }

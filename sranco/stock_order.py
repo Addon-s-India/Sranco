@@ -61,8 +61,7 @@ def stock_order_on_submit(doc, method):
 @frappe.whitelist()
 def get_qty_from_stock_order(tn_number, required_qty):
     logger.info(f"tn_number: {tn_number}, required_qty: {required_qty}")
-    
-    # Query the Stock Order for matching tn_number
+
     try:
         stock_orders = frappe.get_all(
             "Stock Order Items",
@@ -71,43 +70,45 @@ def get_qty_from_stock_order(tn_number, required_qty):
             order_by="creation asc",
         )
         logger.info(f"stock_orders: {stock_orders}")
-        
-        matching_stock_order = None
-        
-        if stock_orders:
-            # Loop through the Stock Order items to find a match
-            for stock_order in stock_orders:
-                qty = stock_order["qty"]
-                sales_qty = stock_order["sales_qty"]
-                logger.info(f"qty: {qty}, sales_qty: {sales_qty}")
-                if qty - sales_qty > 0 and (qty - sales_qty) >= float(required_qty):
-                    matching_stock_order = {
-                        "qty": required_qty,
-                        "purchase_order": stock_order["purchase_order"],
-                        "order_confirmation": stock_order["order_confirmation"],
-                        "stock_order": stock_order["parent"],
-                    }
-                    break  # Found a match, exit the loop
-                
-                elif (qty - sales_qty) > 0 and (qty - sales_qty) < float(required_qty):
-                    matching_stock_order = {
-                        "qty": qty,
-                        "purchase_order": stock_order["purchase_order"],
-                        "order_confirmation": stock_order["order_confirmation"],
-                        "stock_order": stock_order["parent"],
-                    }
+
+        matching_stock_orders = []
+        total_qty = 0
+
+        for stock_order in stock_orders:
+            qty = stock_order["qty"]
+            sales_qty = stock_order["sales_qty"]
+            available_qty = qty - sales_qty
+            logger.info(f"qty: {qty}, sales_qty: {sales_qty}, available_qty: {available_qty}")
+
+            if available_qty > 0:
+                if total_qty + available_qty >= float(required_qty):
+                    qty_to_add = float(required_qty) - total_qty
+                    total_qty += qty_to_add
+                else:
+                    qty_to_add = available_qty
+                    total_qty += qty_to_add
+
+                matching_stock_orders.append({
+                    "qty": qty_to_add,
+                    "purchase_order": stock_order["purchase_order"],
+                    "order_confirmation": stock_order["order_confirmation"],
+                    "stock_order": stock_order["parent"],
+                })
+
+                if total_qty >= float(required_qty):
                     break
-            
-            if matching_stock_order:
-                return matching_stock_order
-            else:
-                frappe.msgprint(f"No matching Stock Order with qty {required_qty} found for tn_number {tn_number}")
+
+        if matching_stock_orders:
+            return matching_stock_orders
         else:
+            frappe.msgprint(f"No matching Stock Order with sufficient qty found for tn_number {tn_number}")
             return None
-        
+
     except Exception as e:
         logger.error(f"Error: {e}")
         return None
+
+
 
 
 @frappe.whitelist()

@@ -84,18 +84,22 @@ def sales_order_on_submit(doc, method):
         if not item.purchase_order:
             item.purchase_order = po.name
     po.submit()
-    
+    logger.info(f"Stock Order Items {doc.items}")
     # Update Stock Order items with sales quantities
     for item in doc.items:
+        logger.info(f"Sales Order Stock Order Items {item.custom_stock_order}")
         if item.custom_stock_order:
+            logger.info(f"Sales Order Stock Order Items {item.custom_stock_order}")
             stock_order_items = frappe.get_all(
                 "Stock Order Items",
                 filters={"parent": item.custom_stock_order, "item_code": item.item_code},
                 fields=["name", "sales_qty"],
             )
+            logger.info(f"Sales Order Stock Order Items {stock_order_items}")
             for stock_order_item in stock_order_items:
                 stock_order = frappe.get_doc("Stock Order Items", stock_order_item.name)
                 stock_order.sales_qty += item.qty
+                logger.info(f"Updated Stock Order {stock_order.name} with sales quantity {item.qty}")
                 stock_order.save()
                 frappe.msgprint(f"Updated Stock Order {stock_order.name} with sales quantity {item.qty}")
             
