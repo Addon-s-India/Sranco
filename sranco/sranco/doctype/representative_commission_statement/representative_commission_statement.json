@@ -1,0 +1,135 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:REP-{MM}-{YYYY}-{######}",
+ "creation": "2023-12-14 20:13:45.960378",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "representative",
+  "column_break_djdlc",
+  "from",
+  "column_break_foqhd",
+  "to",
+  "column_break_rbhay",
+  "column_break_t0gak",
+  "section_break_sgual",
+  "statement",
+  "section_break_bp8r7",
+  "total_commission",
+  "column_break_shhq2",
+  "total_no_of_sales_invoice",
+  "column_break_iaoxm",
+  "column_break_jx5g8",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "representative",
+   "fieldtype": "Link",
+   "label": "Representative",
+   "options": "Sales Partner"
+  },
+  {
+   "fieldname": "column_break_djdlc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from",
+   "fieldtype": "Date",
+   "label": "From"
+  },
+  {
+   "fieldname": "column_break_foqhd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "to",
+   "fieldtype": "Date",
+   "label": "To"
+  },
+  {
+   "fieldname": "section_break_sgual",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "statement",
+   "fieldtype": "Table",
+   "label": "Statement",
+   "options": "Representative Commission Statement Table"
+  },
+  {
+   "fieldname": "section_break_bp8r7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_commission",
+   "fieldtype": "Currency",
+   "label": "Total Commission",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_shhq2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_no_of_sales_invoice",
+   "fieldtype": "Int",
+   "label": "Total No of Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Representative Commission Statement",
+   "print_hide": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "column_break_rbhay",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_t0gak",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_iaoxm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_jx5g8",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2023-12-15 11:48:46.060486",
+ "modified_by": "Administrator",
+ "module": "Sranco",
+ "name": "Representative Commission Statement",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

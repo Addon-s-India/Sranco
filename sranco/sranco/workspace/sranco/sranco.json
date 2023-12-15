@@ -127,7 +127,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Transactions",
-   "link_count": 10,
+   "link_count": 13,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -172,6 +172,36 @@
    "link_type": "DocType",
    "onboard": 0,
    "only_for": "India",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Invoice",
+   "link_count": 0,
+   "link_to": "Sales Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Representative Commission Statement",
+   "link_count": 0,
+   "link_to": "Representative Commission Statement",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SNC Commission Statement",
+   "link_count": 0,
+   "link_to": "SNC Commission Statement",
+   "link_type": "DocType",
+   "onboard": 0,
    "type": "Link"
   },
   {
@@ -241,7 +271,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-10-31 18:26:11.684769",
+ "modified": "2023-12-15 13:18:46.823725",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Sranco",

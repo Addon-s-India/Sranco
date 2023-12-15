@@ -44,6 +44,7 @@ doctype_js = {
     "Item Price": "public/js/ItemPrice.js",
     "Purchase Receipt": "public/js/PurchaseReceipt.js",
     "Stock Order": "public/js/StockOrder.js",
+    "Sales Partner": "public/js/SalesPartner.js",
 }
 # doctype_js = {"doctype" : "public/js/doctype.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
@@ -141,7 +142,7 @@ doc_events = {
     "Stock Order": {
         "on_submit": "sranco.stock_order.on_submit",
     },
-        "Item Price": {
+    "Item Price": {
         "validate": "sranco.item_price.validate"
     },
     "Purchase Receipt": {

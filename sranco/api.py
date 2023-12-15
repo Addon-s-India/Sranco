@@ -277,3 +277,32 @@ def update_received_qty_in_shipment_tracker(shipment_tracker, transport_mode, re
     except Exception as e:
         return frappe.throw(_("An error occurred while updating the Shipment Tracker: {0}").format(e))
     
+
+@frappe.whitelist()    
+def create_new_supplier(partner_name):
+    try:
+        # create new supplier
+        supplier = frappe.new_doc('Supplier')
+        supplier.supplier_name = partner_name
+        supplier.supplier_group = "Services"
+        supplier.supplier_type = "Individual"
+        supplier.gst_category = "Unregistered"
+        
+        # save and submit the supplier
+        supplier.save()
+        
+        # frappe msgprint
+        frappe.msgprint(f"Supplier {supplier.supplier_name} created successfully")
+        logger.info(f"Supplier {supplier.supplier_name} created successfully")
+        
+        # set custom_supplier field in sales partner doc 
+        sales_partner = frappe.get_doc("Sales Partner", partner_name)
+        sales_partner.custom_supplier = supplier.name
+        sales_partner.save()
+        
+        return "success"
+    
+    except Exception as e:
+        logger.info(f"Error creating supplier :: {e}")
+        frappe.log_error(str(e), "Error creating supplier")
+        return "error"
