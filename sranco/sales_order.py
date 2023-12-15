@@ -27,12 +27,12 @@ def item_price_update(doc, method):
                 existing_item_price.custom_snc_commission_type = item.custom_snc_commission_type
                 if item.custom_snc_commission_:
                     existing_item_price.custom_snc_commission_ = item.custom_snc_commission_
-                    existing_item_price.custom_snc_commission_amount = item.custom_snc_commission_amount / item.qty
-                    existing_item_price.custom_snc_commission_lumpsum = item.custom_snc_commission_amount / item.qty
+                    existing_item_price.custom_snc_commission_amount = item.custom_snc_commission_amount_per_qty
+                    existing_item_price.custom_snc_commission_lumpsum = item.custom_snc_commission_amount_per_qty
                     
                 else:
-                    existing_item_price.custom_snc_commission_amount = item.custom_snc_commission_amount
-                    existing_item_price.custom_snc_commission_lumpsum = item.custom_snc_commission_amount
+                    existing_item_price.custom_snc_commission_amount = item.custom_snc_commission_amount_per_qty
+                    existing_item_price.custom_snc_commission_lumpsum = item.custom_snc_commission_amount_per_qty
                 
                 if item.custom_has_representative_commission:
                     existing_item_price.custom_has_representative_commission = item.custom_has_representative_commission
@@ -40,9 +40,9 @@ def item_price_update(doc, method):
                     existing_item_price.custom_rep_commission_type = item.custom_rep_commission_type
                     if item.custom_rep_commission_:
                         existing_item_price.custom_rep_commission_ = item.custom_rep_commission_
-                        existing_item_price.custom_rep_commission_amount = item.custom_rep_commission_amount / item.qty
+                        existing_item_price.custom_rep_commission_amount = item.custom_rep_commission_amount_per_qty
                     else:
-                        existing_item_price.custom_rep_commission_amount = item.custom_rep_commission_amount
+                        existing_item_price.custom_rep_commission_amount = item.custom_rep_commission_amount_per_qty
 
                 logger.info(f"Updating Item Price {existing_item_price.item_code} with rate {item.rate}")
                 frappe.msgprint(f"Updated Item Price {existing_item_price.item_code} with rate {item.rate}")
@@ -60,11 +60,11 @@ def item_price_update(doc, method):
             new_item_price.custom_snc_commission_type = item.custom_snc_commission_type
             if item.custom_snc_commission_:
                 new_item_price.custom_snc_commission_ = item.custom_snc_commission_
-                new_item_price.custom_snc_commission_amount = item.custom_snc_commission_amount / item.qty
-                new_item_price.custom_snc_commission_lumpsum = item.custom_snc_commission_amount / item.qty
+                new_item_price.custom_snc_commission_amount = item.custom_snc_commission_amount_per_qty
+                new_item_price.custom_snc_commission_lumpsum = item.custom_snc_commission_amount_per_qty
             else:
-                new_item_price.custom_snc_commission_amount = item.custom_snc_commission_amount
-                new_item_price.custom_snc_commission_lumpsum = item.custom_snc_commission_amount
+                new_item_price.custom_snc_commission_amount = item.custom_snc_commission_amount_per_qty
+                new_item_price.custom_snc_commission_lumpsum = item.custom_snc_commission_amount_per_qty
             
             if item.custom_has_representative_commission:
                 new_item_price.custom_has_representative_commission = item.custom_has_representative_commission
@@ -72,10 +72,10 @@ def item_price_update(doc, method):
                 new_item_price.custom_rep_commission_type = item.custom_rep_commission_type
                 if item.custom_rep_commission_:
                     new_item_price.custom_rep_commission_ = item.custom_rep_commission_
-                    new_item_price.custom_rep_commission_amount = item.custom_rep_commission_amount / item.qty
+                    new_item_price.custom_rep_commission_amount = item.custom_rep_commission_amount_per_qty
                     
                 else:
-                    new_item_price.custom_rep_commission_amount = item.custom_rep_commission_amount
+                    new_item_price.custom_rep_commission_amount = item.custom_rep_commission_amount_per_qty
             logger.info(f"Creating new Item Price {new_item_price.item_code} with rate {item.rate}")
             new_item_price.insert()
             frappe.msgprint(f"Created new Item Price {new_item_price.item_code} with rate {item.rate}")

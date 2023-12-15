@@ -16,6 +16,14 @@ frappe.ui.form.on("Sales Invoice Item", {
         update_rep_commission(frm, cdt, cdn);
         update_snc_commission(frm, cdt, cdn);
     },
+    custom_rep_commission_type: function (frm, cdt, cdn) {
+        update_rep_commission(frm, cdt, cdn);
+        calc_total_rep_commission(frm);
+    },
+    custom_snc_commission_type: function (frm, cdt, cdn) {
+        update_snc_commission(frm, cdt, cdn);
+        calc_total_snc_commission(frm);
+    },
 });
 
 function calc_total_rep_commission(frm) {
@@ -47,6 +55,10 @@ function update_rep_commission(frm, cdt, cdn) {
         row.custom_rep_commission_amount =
             (row.custom_rep_commission_ * row.rate * row.qty) / 100;
         frm.refresh_field("items");
+    } else if (row.custom_rep_commission_type == "Amount") {
+        row.custom_rep_commission_amount =
+            row.custom_rep_commission_amount_per_qty * row.qty;
+        frm.refresh_field("items");
     }
 }
 
@@ -55,6 +67,10 @@ function update_snc_commission(frm, cdt, cdn) {
     if (row.custom_snc_commission_type == "Percent") {
         row.custom_snc_commission_amount =
             (row.custom_snc_commission_ * row.rate * row.qty) / 100;
+        frm.refresh_field("items");
+    } else if (row.custom_snc_commission_type == "Amount") {
+        row.custom_snc_commission_amount =
+            row.custom_snc_commission_amount_per_qty * row.qty;
         frm.refresh_field("items");
     }
 }
