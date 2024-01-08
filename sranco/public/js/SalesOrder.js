@@ -60,7 +60,10 @@ frappe.ui.form.on("Sales Order", {
                     locals[cur_frm.fields_dict["items"].grid.doctype][
                         $(item).attr("data-name")
                     ];
-                if (d["custom_stock_order"].length > 0) {
+                if (
+                    d["custom_stock_order"] &&
+                    d["custom_stock_order"].length > 0
+                ) {
                     $(item)
                         .find(".grid-row-check")
                         .css({ "background-color": "green" });
