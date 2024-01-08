@@ -164,6 +164,7 @@ def create_gi_date_tracker_and_update_po(dispatch_data):
     except Exception as e:
         logger.info(f"Error updating Ready Quantity & Creating GI Date Tracker :: {e}")
         frappe.log_error(str(e), "Error updating Ready Quantity & Creating GI Date Tracker")
+        frappe.msgprint(f"Error updating Ready Quantity & Creating GI Date Tracker :: {e}", alert=True, indicator='red')
 
         return 'error'
     
