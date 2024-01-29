@@ -8,14 +8,25 @@ def validate(doc, method):
     if doc.is_new():
         # If the document is new, directly add the current price to the Price History
         logger.info(f"Validate method called for new doc. Adding initial price for {doc.item_code} as {doc.price_list_rate}")
+        
+        # get the ref_code from customer_items child table with matching customer_name in item_price
+        ref_code = frappe.db.get_value('Item Customer Detail', {'parent': doc.item_code, 'customer_name': doc.custom_customer_name}, 'ref_code')
+        
         doc.append('custom_price_history', {
             'price': doc.price_list_rate,
             'changed_by': frappe.session.user,
-            'date_time': now_datetime()
+            'date_time': now_datetime(),
+            'customer_item_code': ref_code,
         })
     else:
         # Fetch the existing document
         original_doc = frappe.get_doc('Item Price', doc.name)
+        
+        # get item doc to check if the item is active or not
+        item_doc = frappe.get_doc('Item', doc.item_code)
+        
+        # get the ref_code from customer_items child table with matching customer_name in item_price
+        ref_code = frappe.db.get_value('Item Customer Detail', {'parent': doc.item_code, 'customer_name': doc.custom_customer_name}, 'ref_code')
 
         # Check if the last entry in the price history is different from the current price_list_rate
         last_entry = doc.custom_price_history[-1] if doc.custom_price_history else None
@@ -25,7 +36,8 @@ def validate(doc, method):
             doc.append('custom_price_history', {
                 'price': doc.price_list_rate,
                 'changed_by': frappe.session.user,
-                'date_time': now_datetime()
+                'date_time': now_datetime(),
+                'customer_item_code': ref_code,
             })
 
         # SNC commission history logic

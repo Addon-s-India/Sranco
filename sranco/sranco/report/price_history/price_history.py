@@ -71,6 +71,12 @@ def get_columns_and_data(filters):
             "label": "Customer Name",
             "fieldtype": "Data",
             "width": 200
+        },
+        {
+            "fieldname": "customer_item_code",
+            "label": "Customer Item Code",
+            "fieldtype": "Data",
+            "width": 200
         }
     ]
 
@@ -85,6 +91,7 @@ def get_columns_and_data(filters):
         tnNumber = item.get("tn_number")
         customer = item.get("customer")
         customer_name = item.get("customer_name")
+        customer_item_code = item.get("customer_item_code")
         row = {
             "docname": doc,
             "tn_number": tnNumber,
@@ -95,7 +102,8 @@ def get_columns_and_data(filters):
             "date_time": None,
             "percent_change": None,
             "customer": customer,
-            "customer_name": customer_name
+            "customer_name": customer_name,
+            "customer_item_code": customer_item_code
         }
         data.append(row)
 
@@ -113,7 +121,8 @@ def get_columns_and_data(filters):
                 "date_time": history.get("date_time"),
                 "percent_change": None,  # Set to None initially
                 "customer": "",
-                "customer_name": ""
+                "customer_name": "",
+                "customer_item_code": ""
             }
             
             # Compute the percent change if not the last item in the list
@@ -148,12 +157,15 @@ def get_item_details(filters):
             ip.item_name,
             ip.customer,
             c.customer_name,
-            ip.price_list_rate as current_rate
+            ip.price_list_rate as current_rate,
+            icd.ref_code as customer_item_code
         FROM
             `tabItem Price` ip
         JOIN `tabItem` i ON ip.item_code = i.name
+        JOIN `tabItem Customer Detail` icd ON ip.item_code = icd.parent
         JOIN `tabCustomer` c ON ip.customer = c.name
         WHERE {conditions}
+        AND icd.customer_name = c.customer_name
     """.format(conditions=conditions or "1=1"), filters, as_dict=1)
 
 def get_price_history_for_item(docName, filters):

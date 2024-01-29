@@ -26,6 +26,7 @@
   {
    "fieldname": "customer",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Customer",
    "options": "Customer",
    "read_only": 1
@@ -49,6 +50,7 @@
   {
    "fieldname": "sales_order",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Sales Order",
    "options": "Sales Order",
    "read_only": 1
@@ -56,6 +58,7 @@
   {
    "fieldname": "purchase_order",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Purchase Order",
    "options": "Purchase Order",
    "read_only": 1
@@ -68,7 +71,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-10-29 02:35:15.982956",
+ "modified": "2024-01-29 11:09:25.774209",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Ready For Dispatch",

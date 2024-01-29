@@ -150,3 +150,26 @@ def sales_order_on_submit(doc, method):
     # Add a comment in the Sales Order indicating the Purchase Order creation
     frappe.msgprint(_("Purchase Order {0} created successfully!").format(po.name))
 
+
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def custom_item_query(doctype, txt, searchfield, start, page_len, filters):
+    logger.info(f"Item Query called with txt {txt} and filters {filters}")
+    return frappe.db.sql("""
+        SELECT tabItem.name, tabItem.item_name , icd.ref_code
+        FROM `tabItem`
+        JOIN `tabItem Price` ip ON tabItem.name = ip.item_code
+        JOIN `tabItem Customer Detail` icd ON ip.item_code = icd.parent
+        WHERE ip.customer = %(customer)s
+        AND icd.customer_name = ip.customer
+            AND (tabItem.name LIKE %(txt)s
+                OR tabItem.item_name LIKE %(txt)s)
+                
+        LIMIT %(start)s, %(page_len)s
+    """, {
+        'customer': filters.get('customer'),
+        'txt': "%%%s%%" % frappe.db.escape(txt),
+        'start': start,
+        'page_len': page_len
+    })

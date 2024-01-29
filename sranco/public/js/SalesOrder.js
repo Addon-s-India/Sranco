@@ -1,11 +1,20 @@
 frappe.ui.form.on("Sales Order", {
-    onload: function (frm) {
-        frm.fields_dict["items"].grid.get_field("item_code").get_query =
-            function (doc, cdt, cdn) {
-                return {
-                    query: "sranco.sranco.item_code_query.custom_item_query",
-                };
+    setup: function (frm) {
+        frm.set_query("item_code", "items", function (doc, cdt, cdn) {
+            return {
+                query: "sranco.sales_order.custom_item_query",
+                filters: { customer: doc.customer },
             };
+        });
+    },
+    onload: function (frm) {
+        frm.set_query("item_code", "items", function () {
+            console.log("customer", frm.doc.customer);
+            return {
+                query: "sranco.sales_order.custom_item_query",
+                filters: { customer: frm.doc.customer },
+            };
+        });
         if (frm.doc.docstatus !== 1) {
             frm.fields_dict["items"].grid.add_custom_button(
                 __("Get Qty from Stock Order"),
@@ -121,6 +130,14 @@ frappe.ui.form.on("Sales Order Item", {
             return {
                 query: "sranco.stock_order.custom_stock_order_query",
                 filters: { item_code: row.item_code },
+            };
+        });
+
+        frm.set_query("item_code", "items", function () {
+            console.log("customer", frm.doc.customer);
+            return {
+                query: "sranco.sales_order.custom_item_query",
+                filters: { customer: frm.doc.customer },
             };
         });
     },
