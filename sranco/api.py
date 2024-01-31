@@ -70,11 +70,11 @@ def update_item_prices(docnames, by_percent=None, by_amount=None):
         for docname in docnames:
             item_price_doc = frappe.get_doc("Item Price", docname)
             current_price = frappe.get_value("Item Price", docname, "price_list_rate")
-            logger.info(f"Current price for {docname} is {current_price}")
+            logger.info(f"Current price for {docname} is {current_price} and by_percent is {by_percent} and by_amount is {by_amount}")
             if not current_price:
                 continue
 
-            if by_percent:
+            if by_percent and float(by_percent) != 0:
                 new_price = current_price + (current_price * float(by_percent) / 100)
             else:  # by_amount
                 new_price = current_price + float(by_amount)

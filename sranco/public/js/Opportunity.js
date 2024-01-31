@@ -121,16 +121,23 @@ frappe.ui.form.on("Opportunity Item", {
                     doctype: "Item Price",
                     filters: {
                         item_code: row.custom_reference_tn_number,
-                        customer: frm.doc.party_name,
                     },
-                    fields: ["price_list_rate", "uom"],
+                    order_by: "creation asc",
+                    fields: ["price_list_rate", "uom", "customer"],
                 },
                 callback: function (response) {
                     console.log("response :: ", response.message);
                     if (response.message) {
-                        row.custom_standard_selling_rate =
-                            response.message[0].price_list_rate;
-                        row.uom = response.message[0].uom;
+                        // select the price list rate which does not have customer value
+                        // if customer value is present, it means it is a custom price list rate
+                        // and should not be used
+                        response.message.forEach(function (item) {
+                            if (item.customer === null) {
+                                row.custom_standard_selling_rate =
+                                    item.price_list_rate;
+                                row.uom = item.uom;
+                            }
+                        });
                         // hide rate field
                         frm.fields_dict["items"].grid.toggle_display(
                             "rate",
