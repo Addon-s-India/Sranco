@@ -155,21 +155,26 @@ def sales_order_on_submit(doc, method):
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
 def custom_item_query(doctype, txt, searchfield, start, page_len, filters):
-    logger.info(f"Item Query called with txt {txt} and filters {filters}")
-    return frappe.db.sql("""
-        SELECT tabItem.name, tabItem.item_name , icd.ref_code
-        FROM `tabItem`
-        JOIN `tabItem Price` ip ON tabItem.name = ip.item_code
-        JOIN `tabItem Customer Detail` icd ON ip.item_code = icd.parent
-        WHERE ip.customer = %(customer)s
-        AND icd.customer_name = ip.customer
-            AND (tabItem.name LIKE %(txt)s
-                OR tabItem.item_name LIKE %(txt)s)
-                
+    
+    # logger.info(f"txt: {txt}, searchfield: {searchfield}, start: {start}, page_len: {page_len}, filters: {filters}")
+    customer_filter = ""
+    if filters.get('customer'):
+        customer_filter = "AND ip.customer = %(customer)s"
+
+    return frappe.db.sql(f"""
+        SELECT it.item_code, it.item_name, icd.ref_code
+        FROM `tabItem` it
+        LEFT JOIN `tabItem Price` ip ON it.item_code = ip.item_code
+        LEFT JOIN `tabItem Customer Detail` icd ON it.item_code = icd.parent
+        WHERE it.docstatus = 0
+            {customer_filter}
+            AND ((it.{searchfield} LIKE %(txt)s) OR (icd.ref_code LIKE %(txt)s))
+        ORDER BY it.creation ASC, it.name ASC
         LIMIT %(start)s, %(page_len)s
     """, {
         'customer': filters.get('customer'),
-        'txt': "%%%s%%" % frappe.db.escape(txt),
+        'txt': "%{}%".format(txt),
+        '_txt': txt.replace("%", ""),
         'start': start,
         'page_len': page_len
     })
