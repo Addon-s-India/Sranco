@@ -17,6 +17,10 @@
   "date",
   "section_break_1xsrt",
   "items",
+  "section_break_ehraz",
+  "column_break_9xrsu",
+  "column_break_jxikc",
+  "grand_total",
   "amended_from"
  ],
  "fields": [
@@ -76,12 +80,29 @@
    "fieldtype": "Data",
    "label": "Purchase Order",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_ehraz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_9xrsu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_jxikc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-11-30 12:50:06.884873",
+ "modified": "2024-02-02 10:58:15.624149",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Stock Order",

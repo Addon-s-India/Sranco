@@ -8,14 +8,17 @@
  "field_order": [
   "tn_number",
   "item_code",
+  "snc_oa_date",
   "column_break_kkrzq",
   "item_name",
   "customer_item_code",
+  "customer_expected_delivery_date",
   "section_break_wnzdm",
   "rate",
   "uom",
   "column_break_0g15p",
   "qty",
+  "amount",
   "sales_qty",
   "purchase_order",
   "order_confirmation",
@@ -25,6 +28,7 @@
   "thickness",
   "bore",
   "column_break_3glxc",
+  "specification",
   "speed",
   "more_dimensions",
   "application"
@@ -153,12 +157,35 @@
    "fieldtype": "Float",
    "label": "Sales Qty",
    "read_only": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount"
+  },
+  {
+   "fieldname": "specification",
+   "fieldtype": "Data",
+   "label": "Specification",
+   "read_only": 1
+  },
+  {
+   "fieldname": "snc_oa_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "SNC OA Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer_expected_delivery_date",
+   "fieldtype": "Date",
+   "label": "Customer Expected Delivery Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-12-08 23:28:39.474916",
+ "modified": "2024-02-02 11:19:37.286627",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Stock Order Items",
