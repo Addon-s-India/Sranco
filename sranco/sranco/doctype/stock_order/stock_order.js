@@ -288,9 +288,13 @@ frappe.ui.form.on("Stock Order Items", {
 
 function calc_grand_total(frm) {
     var grand_total = 0;
+    var total_qty = 0;
     $.each(frm.doc.items || [], function (i, item) {
         grand_total += item.amount;
+        total_qty += item.qty;
     });
     frm.set_value("grand_total", grand_total);
+    frm.set_value("total_qty", total_qty);
     refresh_field("grand_total");
+    refresh_field("total_qty");
 }

@@ -15,12 +15,17 @@
   "order_attach",
   "column_break_poczo",
   "date",
+  "contact_person",
   "section_break_1xsrt",
   "items",
   "section_break_ehraz",
   "column_break_9xrsu",
+  "total_qty",
   "column_break_jxikc",
   "grand_total",
+  "section_break_namyu",
+  "terms_and_conditions",
+  "terms",
   "amended_from"
  ],
  "fields": [
@@ -97,12 +102,39 @@
    "fieldname": "grand_total",
    "fieldtype": "Currency",
    "label": "Grand Total"
+  },
+  {
+   "fieldname": "total_qty",
+   "fieldtype": "Float",
+   "label": "Total Qty"
+  },
+  {
+   "fieldname": "section_break_namyu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "terms_and_conditions",
+   "fieldtype": "Link",
+   "label": "Terms and Conditions",
+   "options": "Terms and Conditions"
+  },
+  {
+   "fetch_from": "terms_and_conditions.terms",
+   "fieldname": "terms",
+   "fieldtype": "Data",
+   "label": "Terms"
+  },
+  {
+   "fieldname": "contact_person",
+   "fieldtype": "Link",
+   "label": "Contact Person",
+   "options": "Contact"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-02-02 10:58:15.624149",
+ "modified": "2024-02-02 18:10:38.450379",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Stock Order",
