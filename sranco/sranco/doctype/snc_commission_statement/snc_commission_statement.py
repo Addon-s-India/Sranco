@@ -11,6 +11,7 @@ class SNCCommissionStatement(Document):
 			# Create a new Purchase Invoice
 			sales_invoice = frappe.new_doc("Sales Invoice")
 			sales_invoice.customer = "Tyrolit"  # Update with actual supplier
+			sales_invoice.custom_invoice_no_t = self.statement[0].invoice_no_t
 
 			# Loop through each statement row and create an item in the Purchase Invoice
 			for statement_row in self.statement:

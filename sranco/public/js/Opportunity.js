@@ -139,10 +139,11 @@ frappe.ui.form.on("Opportunity Item", {
                             }
                         });
                         // hide rate field
-                        frm.fields_dict["items"].grid.toggle_display(
-                            "rate",
-                            false
-                        );
+                        // frm.fields_dict["items"].grid.toggle_display(
+                        //     "rate",
+                        //     false
+                        // );
+                        frm.fields_dict["items"].grid.toggle_reqd("rate", true);
                         frm.refresh_field("items");
                     }
                 },
@@ -161,12 +162,14 @@ function set_field_visibility(row, frm) {
     if (row.custom_new_enquiry == 1) {
         frm.fields_dict["items"].grid.toggle_display("item_code", false);
         frm.fields_dict["items"].grid.toggle_display("item_name", false);
+        frm.fields_dict["items"].grid.toggle_reqd("rate", false);
         // clear item_code and item_name
         row.item_code = "";
         row.item_name = "";
     } else {
         frm.fields_dict["items"].grid.toggle_display("item_code", true);
         frm.fields_dict["items"].grid.toggle_display("item_name", true);
+        frm.fields_dict["items"].grid.toggle_reqd("rate", false);
         // clear item code and item name
         row.item_code = "";
         row.item_name = "";

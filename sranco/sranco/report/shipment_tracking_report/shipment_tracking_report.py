@@ -27,6 +27,7 @@ def get_columns():
         {"label": _("Mode"), "fieldname": "mode", "width": 100},
         {"label": _("Quantity"), "fieldname": "quantity", "fieldtype": "Float", "width": 100},
         {"label": _("Received Qty"), "fieldname": "received_qty", "fieldtype": "Float", "width": 120},
+        {"label": _("Balance Qty"), "fieldname": "balance_qty", "fieldtype": "Float", "width": 120},
         {"label": _("EOD"), "fieldname": "eod", "fieldtype": "Date", "width": 100}
     ]
 
@@ -65,6 +66,7 @@ def get_data(filters):
             tmt.mode,
             tmt.quantity,
             tmt.received_qty,
+            (tmt.quantity - tmt.received_qty) AS balance_qty,
             tmt.eod
         FROM
             `tabShipment Tracker` AS st

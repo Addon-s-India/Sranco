@@ -15,7 +15,10 @@ class RepresentativeCommissionStatement(Document):
 			# Loop through each statement row and create an item in the Purchase Invoice
 			for statement_row in self.statement:
 				item = purchase_invoice.append('items', {})
-				item.item_code = "Representative Commission"
+    
+				# get item_code which has the the item_name as "Representative Commission"
+				item_data = frappe.get_doc("Item", {"item_name": "Representative Commission"})
+				item.item_code = item_data.item_code
 				item.qty = 1
 				item.rate = statement_row.commission_amount
 				item.amount = statement_row.commission_amount
