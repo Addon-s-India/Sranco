@@ -52,7 +52,7 @@ class SNCCommissionStatement(Document):
 		except Exception as e:
 			error_message = str(e)  # Convert the exception object to a string
 			logger.error(f"Error in on_submit of SNCCommissionStatement: {error_message}")
-			frappe.msgprint(msg=error_message, title="Error", indicator='red')
+			# frappe.msgprint(msg=error_message, title="Error", indicator='red')
 			frappe.log_error(f"Error in on_submit of SNCCommissionStatement: {error_message}", "Sranco_logs")
 
 
