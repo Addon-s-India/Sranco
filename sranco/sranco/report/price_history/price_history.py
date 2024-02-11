@@ -158,14 +158,14 @@ def get_item_details(filters):
             ip.customer,
             c.customer_name,
             ip.price_list_rate as current_rate,
-            icd.ref_code as customer_item_code
+            icd.ref_code as customer_item_code  # This might be NULL for some rows
         FROM
             `tabItem Price` ip
         JOIN `tabItem` i ON ip.item_code = i.name
-        JOIN `tabItem Customer Detail` icd ON ip.item_code = icd.parent
+        LEFT JOIN `tabItem Customer Detail` icd ON ip.item_code = icd.parent  # Changed to LEFT JOIN
         JOIN `tabCustomer` c ON ip.customer = c.name
         WHERE {conditions}
-        AND icd.customer_name = c.customer_name
+        AND (icd.customer_name = c.customer_name OR icd.customer_name IS NULL)  # Adjusted condition to include items without customer item code
     """.format(conditions=conditions or "1=1"), filters, as_dict=1)
 
 def get_price_history_for_item(docName, filters):

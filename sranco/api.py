@@ -124,7 +124,7 @@ def update_item_commissions(docnames, by_percent=None, by_amount=None):
 
 
 @frappe.whitelist()
-def create_gi_date_tracker_and_update_po(dispatch_data):
+def create_gi_date_tracker_and_update_po(dispatch_data, date):
     try:
         dispatch_data = json.loads(dispatch_data)
         skipped_items = []
@@ -137,6 +137,7 @@ def create_gi_date_tracker_and_update_po(dispatch_data):
             # Create and submit GI Date Tracker
             gi_date_tracker = frappe.new_doc('GI Date Tracker')
             gi_date_tracker.sequence_no = (row['sequence_no'])
+            gi_date_tracker.date = date
             gi_date_tracker.item_code = row['item_code']
             gi_date_tracker.item_name = row['item_name']
             gi_date_tracker.tn_number = row['tn_number']
@@ -170,7 +171,7 @@ def create_gi_date_tracker_and_update_po(dispatch_data):
     
     
 @frappe.whitelist()
-def create_shipment_tracker_and_update_po(shipment_data, purchase_order, sales_order, order_confirmation):
+def create_shipment_tracker_and_update_po(shipment_data, purchase_order, sales_order, order_confirmation, date):
     try:
         shipment_data = json.loads(shipment_data)
         skipped_items = []
@@ -188,6 +189,7 @@ def create_shipment_tracker_and_update_po(shipment_data, purchase_order, sales_o
             
             # Populate the main fields from row data
             shipment_tracker.sales_order = sales_order
+            shipment_tracker.date = date
             shipment_tracker.purchase_order = purchase_order
             shipment_tracker.sequence_no = row['sequence_no']
             shipment_tracker.item_code = row['item_code']

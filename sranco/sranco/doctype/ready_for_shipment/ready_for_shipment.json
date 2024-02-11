@@ -9,8 +9,8 @@
  "field_order": [
   "order_confirmation",
   "customer",
-  "date",
   "column_break_7ccel",
+  "date",
   "purchase_order",
   "sales_order",
   "section_break_xcf6t",
@@ -32,8 +32,7 @@
   {
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date",
-   "read_only": 1
+   "label": "Date"
   },
   {
    "fieldname": "section_break_xcf6t",
@@ -67,7 +66,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-10-29 02:35:31.940331",
+ "modified": "2024-02-11 20:44:38.296515",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Ready for Shipment",

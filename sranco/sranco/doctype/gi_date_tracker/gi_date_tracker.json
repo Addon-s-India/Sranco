@@ -9,6 +9,7 @@
  "engine": "InnoDB",
  "field_order": [
   "shipped",
+  "date",
   "sequence_no",
   "item_code",
   "customer_item_code",
@@ -108,12 +109,17 @@
    "fieldtype": "Data",
    "label": "Customer Item Code",
    "read_only": 1
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-10-29 11:55:33.546098",
+ "modified": "2024-02-11 20:59:14.191180",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "GI Date Tracker",

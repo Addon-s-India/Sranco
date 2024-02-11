@@ -9,6 +9,7 @@
  "engine": "InnoDB",
  "field_order": [
   "sales_order",
+  "date",
   "purchase_order",
   "gi_date",
   "item_code",
@@ -111,12 +112,17 @@
    "fieldtype": "Data",
    "label": "Customer Item Code",
    "read_only": 1
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-10-30 02:32:51.847012",
+ "modified": "2024-02-11 20:59:42.340186",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Shipment Tracker",

@@ -154,6 +154,7 @@ function apply_changes_function(frm) {
             method: "sranco.api.create_gi_date_tracker_and_update_po",
             args: {
                 dispatch_data: valid_rows,
+                date: frm.doc.date,
             },
             callback: function (response) {
                 if (response.message) {

@@ -41,7 +41,8 @@ class SNCCommissionStatement(Document):
 			frappe.msgprint(msg=f"Sales Invoice Created {sales_invoice.name}.", title="Success", indicator='green')
    
 		except Exception as e:
-			frappe.msgprint(msg=e, title="Error", indicator='red')
-			frappe.log_error(f"Error in get_sales_invoice_list: {e}", "Sranco_logs")
-			return []
+			error_message = str(e)  # Convert the exception object to a string
+			frappe.msgprint(msg=error_message, title="Error", indicator='red')
+			frappe.log_error(f"Error in on_submit of SNCCommissionStatement: {error_message}", "Sranco_logs")
+
 
