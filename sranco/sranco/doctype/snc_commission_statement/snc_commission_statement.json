@@ -20,6 +20,7 @@
   "column_break_shhq2",
   "total_no_of_sales_invoice",
   "column_break_iaoxm",
+  "invoice_date",
   "column_break_jx5g8",
   "amended_from"
  ],
@@ -103,12 +104,17 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "invoice_date",
+   "fieldtype": "Date",
+   "label": "Invoice Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-15 12:47:23.574077",
+ "modified": "2024-02-11 21:35:09.616249",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "SNC Commission Statement",

@@ -17,11 +17,13 @@ class SNCCommissionStatement(Document):
 			sales_invoice = frappe.new_doc("Sales Invoice")
 			sales_invoice.customer = "Tyrolit"  # Update with actual supplier
 			sales_invoice.custom_invoice_no_t = self.statement[0].invoice_no_t
+			sales_invoice.due_date = self.invoice_date
+			sales_invoice.posting_date = self.invoice_date
 
 			# Loop through each statement row and create an item in the Purchase Invoice
 			for statement_row in self.statement:
 				item = sales_invoice.append('items', {})
-				item.item_code = "SNC Commission"
+				item_name = "SNC Commission"
 				item.qty = 1
 				item.rate = statement_row.commission_amount
 				item.amount = statement_row.commission_amount
@@ -30,7 +32,8 @@ class SNCCommissionStatement(Document):
 				item.custom_invoice_no_t = statement_row.invoice_no_t
 				item.custom_invoice_customer = statement_row.customer
 				# fetch expense_account from item master
-				item_data = frappe.get_doc("Item", item.item_code)
+				item_data = frappe.get_doc("Item", {"item_name": item_name})
+				item.item_code = item_data.item_code
 				# expense_account value is in the Item Default table
 				item.income_account = item_data.item_defaults[0].income_account
     
@@ -40,7 +43,7 @@ class SNCCommissionStatement(Document):
 				sales_invoice_item.save()
 				logger.info(f"Sales Invoice {sales_invoice_item.name} updated with custom_snc_commission_statement_generated = 1")
 				
-			
+
 			# Other necessary fields of Purchase Invoice should be set here
 			sales_invoice.save()
 			sales_invoice.submit()
