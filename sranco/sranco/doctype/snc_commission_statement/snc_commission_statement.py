@@ -3,6 +3,11 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils import logger
+
+logger.set_log_level("DEBUG")
+logger = frappe.logger("sranco_snc", allow_site=True, file_count=1)
+
 
 class SNCCommissionStatement(Document):
 	def on_submit(self):
@@ -33,8 +38,9 @@ class SNCCommissionStatement(Document):
 				sales_invoice_item = frappe.get_doc("Sales Invoice", statement_row.sales_invoice)
 				sales_invoice_item.custom_snc_commission_statement_generated = 1
 				sales_invoice_item.save()
+				logger.info(f"Sales Invoice {sales_invoice_item.name} updated with custom_snc_commission_statement_generated = 1")
 				
-
+			
 			# Other necessary fields of Purchase Invoice should be set here
 			sales_invoice.save()
 			sales_invoice.submit()
@@ -42,6 +48,7 @@ class SNCCommissionStatement(Document):
    
 		except Exception as e:
 			error_message = str(e)  # Convert the exception object to a string
+			logger.error(f"Error in on_submit of SNCCommissionStatement: {error_message}")
 			frappe.msgprint(msg=error_message, title="Error", indicator='red')
 			frappe.log_error(f"Error in on_submit of SNCCommissionStatement: {error_message}", "Sranco_logs")
 
