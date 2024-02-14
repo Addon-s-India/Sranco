@@ -101,6 +101,18 @@ frappe.ui.form.on("Sales Order", {
         });
         frm.refresh_field("items");
     },
+    items_add: function (frm, cdt, cdn) {
+        var row = locals[cdt][cdn];
+        console.log("order_confirmation", frm.doc.custom_order_confirmation);
+        if (
+            frm.doc.custom_order_confirmation &&
+            (row.custom_order_confirmation === undefined ||
+                row.custom_order_confirmation === "")
+        ) {
+            row.custom_order_confirmation = frm.doc.custom_order_confirmation;
+        }
+        frm.refresh_field("items");
+    },
     before_submit: function (frm) {
         // Check if custom_order_confirmation is empty
         // if (!frm.doc.custom_order_confirmation) {
@@ -124,6 +136,18 @@ frappe.ui.form.on("Sales Order", {
 });
 
 frappe.ui.form.on("Sales Order Item", {
+    items_add: function (frm, cdt, cdn) {
+        var row = locals[cdt][cdn];
+        console.log("order_confirmation", frm.doc.custom_order_confirmation);
+        if (
+            frm.doc.custom_order_confirmation &&
+            (row.custom_order_confirmation === undefined ||
+                row.custom_order_confirmation === "")
+        ) {
+            row.custom_order_confirmation = frm.doc.custom_order_confirmation;
+        }
+        frm.refresh_field("items");
+    },
     refresh(frm) {
         frm.set_query("custom_stock_order", "items", function (doc, cdt, cdn) {
             var row = locals[cdt][cdn];

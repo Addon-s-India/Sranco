@@ -44,7 +44,6 @@ doctype_js = {
     "Sales Order": "public/js/SalesOrder.js",
     "Item Price": "public/js/ItemPrice.js",
     "Purchase Receipt": "public/js/PurchaseReceipt.js",
-    "Stock Order": "public/js/StockOrder.js",
     "Sales Partner": "public/js/SalesPartner.js",
 }
 # doctype_js = {"doctype" : "public/js/doctype.js"}

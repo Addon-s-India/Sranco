@@ -55,10 +55,10 @@ frappe.ui.form.on("Item Price", {
     },
     custom_snc_commission_: function (frm) {
         // calculate the percent of price_list_rate and set it to custom_snc_commission_amount
-        frm.set_value(
-            "custom_snc_commission_amount",
-            (frm.doc.custom_snc_commission_ * frm.doc.price_list_rate) / 100
-        );
+        const commission_amount =
+            (frm.doc.custom_snc_commission_ * frm.doc.price_list_rate) / 100;
+        console.log("commission_amount", commission_amount);
+        frm.set_value("custom_snc_commission_amount", commission_amount);
     },
     custom_snc_commission_lumpsum: function (frm) {
         // calculate the percent of price_list_rate and set it to custom_snc_commission_amount
@@ -69,9 +69,9 @@ frappe.ui.form.on("Item Price", {
     },
     custom_rep_commission_: function (frm) {
         // calculate the percent of price_list_rate and set it to custom_rep_commission_amount
-        frm.set_value(
-            "custom_rep_commission_amount",
-            (frm.doc.custom_rep_commission_ * frm.doc.price_list_rate) / 100
-        );
+        const commission_amount =
+            (frm.doc.custom_rep_commission_ * frm.doc.price_list_rate) / 100;
+        console.log("commission_amount", commission_amount);
+        frm.set_value("custom_rep_commission_amount", commission_amount);
     },
 });

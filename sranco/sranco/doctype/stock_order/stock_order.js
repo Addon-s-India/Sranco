@@ -13,6 +13,49 @@ frappe.ui.form.on("Stock Order", {
             }
         });
     },
+    gi_date: function (frm) {
+        console.log("gi_date", frm.doc.gi_date);
+        // set gi_date in all the items
+        frm.doc.items.forEach(function (item) {
+            item.gi_date = frm.doc.gi_date;
+        });
+        frm.refresh_field("items");
+    },
+    items_add: function (frm, cdt, cdn) {
+        var row = locals[cdt][cdn];
+        row.gi_date = frm.doc.gi_date;
+    },
+    onload: function (frm) {
+        frm.fields_dict["items"].grid.get_field("item_code").get_query =
+            function (doc, cdt, cdn) {
+                return {
+                    query: "sranco.sales_order.custom_item_query",
+                    filters: {
+                        customer: frm.doc.customer,
+                    },
+                };
+            };
+    },
+    before_submit: function (frm) {
+        // Check if order_confirmation is empty when trying to submit
+        if (!frm.doc.order_confirmation) {
+            frappe.msgprint(__("Please enter the Order Confirmation."));
+            frappe.validated = false; // Prevent submission
+        }
+    },
+    before_save: function (frm) {
+        // copy frm.doc.order_confirmation to all the items in items table
+        if (frm.doc.items.length > 0 && frm.doc.order_confirmation) {
+            frm.doc.items.forEach(function (item) {
+                item.order_confirmation = frm.doc.order_confirmation;
+                if (item.gi_date == null) {
+                    item.gi_date = frm.doc.gi_date;
+                }
+            });
+        }
+        frm.refresh_field("items");
+        // frm.save();
+    },
 });
 
 frappe.ui.form.on("Stock Order Items", {
@@ -35,28 +78,10 @@ frappe.ui.form.on("Stock Order Items", {
                         "item_code",
                         r.message[0].name
                     );
+
                     // fetch item price based on customer and item_code and set rate in row
-                    frappe.call({
-                        method: "frappe.client.get",
-                        args: {
-                            doctype: "Item Price",
-                            filters: {
-                                item_code: r.message[0].name,
-                                price_list: frm.doc.price_list,
-                            },
-                            fields: ["price_list_rate"],
-                        },
-                        callback: function (r) {
-                            if (r.message) {
-                                frappe.model.set_value(
-                                    cdt,
-                                    cdn,
-                                    "rate",
-                                    r.message.price_list_rate
-                                );
-                            }
-                        },
-                    });
+                    get_item_price_data(frm, cdt, cdn, row);
+
                     frappe.call({
                         method: "frappe.client.get",
                         args: {
@@ -233,28 +258,7 @@ frappe.ui.form.on("Stock Order Items", {
                         r.message.stock_uom
                     );
 
-                    // Fetch item price based on customer and item_code and set rate in row
-                    frappe.call({
-                        method: "frappe.client.get",
-                        args: {
-                            doctype: "Item Price",
-                            filters: {
-                                item_code: row.item_code,
-                                price_list: frm.doc.price_list,
-                            },
-                            fields: ["price_list_rate"],
-                        },
-                        callback: function (r) {
-                            if (r.message) {
-                                frappe.model.set_value(
-                                    cdt,
-                                    cdn,
-                                    "rate",
-                                    r.message.price_list_rate
-                                );
-                            }
-                        },
-                    });
+                    get_item_price_data(frm);
 
                     const customerItemCode = r.message.customer_items.find(
                         (item) => item.customer_name == frm.doc.customer
@@ -281,8 +285,13 @@ frappe.ui.form.on("Stock Order Items", {
     qty: function (frm, cdt, cdn) {
         var row = locals[cdt][cdn];
         frappe.model.set_value(cdt, cdn, "amount", row.qty * row.rate);
+        get_item_price_data(frm, cdt, cdn, row);
         // update grand total
         calc_grand_total(frm);
+    },
+    items_add: function (frm, cdt, cdn) {
+        var row = locals[cdt][cdn];
+        row.gi_date = frm.doc.gi_date;
     },
 });
 
@@ -297,4 +306,107 @@ function calc_grand_total(frm) {
     frm.set_value("total_qty", total_qty);
     refresh_field("grand_total");
     refresh_field("total_qty");
+}
+
+function get_item_price_data(frm, cdt, cdn, row) {
+    // Fetch item price based on customer and item_code and set rate in row
+    frappe.call({
+        method: "frappe.client.get",
+        args: {
+            doctype: "Item Price",
+            filters: {
+                item_code: row.item_code,
+                price_list: frm.doc.price_list,
+            },
+            fields: [
+                "price_list_rate",
+                "custom_snc_commission_type",
+                "custom_snc_commission_",
+                "custom_snc_commission_lumpsum",
+                "custom_rep_commission_type",
+                "custom_rep_commission_",
+                "custom_snc_commission_amount",
+                "custom_rep_commission_amount",
+                "custom_representative",
+                "custom_has_representative_commission",
+            ],
+        },
+        callback: function (r) {
+            if (r.message) {
+                frappe.model.set_value(
+                    cdt,
+                    cdn,
+                    "rate",
+                    r.message.price_list_rate
+                );
+                frappe.model.set_value(
+                    cdt,
+                    cdn,
+                    "snc_commission_type",
+                    r.message.custom_snc_commission_type
+                );
+                frappe.model.set_value(
+                    cdt,
+                    cdn,
+                    "snc_commission_",
+                    r.message.custom_snc_commission_
+                );
+                frappe.model.set_value(cdt, cdn, "snc_commission_lumpsum");
+                if (r.message.custom_snc_commission_lumpsum) {
+                    frappe.model.set_value(
+                        cdt,
+                        cdn,
+                        "snc_commission_amount",
+                        r.message.custom_snc_commission_lumpsum * row.qty
+                    );
+                } else if (r.message.custom_snc_commission_) {
+                    frappe.model.set_value(
+                        cdt,
+                        cdn,
+                        "snc_commission_amount",
+                        (r.message.custom_snc_commission_ *
+                            row.qty *
+                            row.rate) /
+                            100
+                    );
+                }
+                frappe.model.set_value(
+                    cdt,
+                    cdn,
+                    "has_representative_commission",
+                    r.message.custom_has_representative_commission
+                );
+                frappe.model.set_value(
+                    cdt,
+                    cdn,
+                    "rep_commission_type",
+                    r.message.custom_rep_commission_type
+                );
+                frappe.model.set_value(
+                    cdt,
+                    cdn,
+                    "rep_commission_",
+                    r.message.custom_rep_commission_
+                );
+                if (r.message.custom_rep_commission_) {
+                    frappe.model.set_value(
+                        cdt,
+                        cdn,
+                        "rep_commission_amount",
+                        (r.message.custom_rep_commission_ *
+                            row.qty *
+                            row.rate) /
+                            100
+                    );
+                } else if (r.message.custom_rep_commission_amount) {
+                    frappe.model.set_value(
+                        cdt,
+                        cdn,
+                        "rep_commission_amount",
+                        r.message.custom_rep_commission_amount * row.qty
+                    );
+                }
+            }
+        },
+    });
 }

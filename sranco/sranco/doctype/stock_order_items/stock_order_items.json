@@ -8,6 +8,7 @@
  "field_order": [
   "tn_number",
   "item_code",
+  "gi_date",
   "snc_oa_date",
   "column_break_kkrzq",
   "item_name",
@@ -31,7 +32,18 @@
   "specification",
   "speed",
   "more_dimensions",
-  "application"
+  "application",
+  "commission_section",
+  "snc_commission_type",
+  "snc_commission_",
+  "snc_commission_lumpsum",
+  "snc_commission_amount",
+  "column_break_bhbgv",
+  "has_representative_commission",
+  "representative",
+  "rep_commission_type",
+  "rep_commission_",
+  "rep_commission_amount"
  ],
  "fields": [
   {
@@ -180,12 +192,84 @@
    "fieldname": "customer_expected_delivery_date",
    "fieldtype": "Date",
    "label": "Customer Expected Delivery Date"
+  },
+  {
+   "fieldname": "gi_date",
+   "fieldtype": "Date",
+   "label": "GI Date"
+  },
+  {
+   "fieldname": "commission_section",
+   "fieldtype": "Section Break",
+   "label": "Commission"
+  },
+  {
+   "default": "Percent",
+   "fieldname": "snc_commission_type",
+   "fieldtype": "Select",
+   "label": "SNC Commission Type",
+   "options": "Percent\nAmount"
+  },
+  {
+   "depends_on": "eval:doc.snc_commission_type == \"Percent\";",
+   "fieldname": "snc_commission_",
+   "fieldtype": "Percent",
+   "label": "SNC Commission %"
+  },
+  {
+   "depends_on": "eval:doc.snc_commission_type == \"Amount\";",
+   "fieldname": "snc_commission_lumpsum",
+   "fieldtype": "Currency",
+   "label": "SNC Commission Lumpsum"
+  },
+  {
+   "fieldname": "snc_commission_amount",
+   "fieldtype": "Currency",
+   "label": "SNC Commission Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_bhbgv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "has_representative_commission",
+   "fieldtype": "Check",
+   "label": "Has Representative Commission"
+  },
+  {
+   "depends_on": "eval: doc.has_representative_commission == 1;",
+   "fieldname": "representative",
+   "fieldtype": "Link",
+   "label": "Representative",
+   "options": "Sales Partner"
+  },
+  {
+   "default": "Percent",
+   "depends_on": "eval: doc.has_representative_commission == 1;",
+   "fieldname": "rep_commission_type",
+   "fieldtype": "Select",
+   "label": "Rep Commission Type",
+   "options": "Percent\nAmount"
+  },
+  {
+   "depends_on": "eval: doc.has_representative_commission == 1;\neval: doc.rep_commission_type == \"Percent\";",
+   "fieldname": "rep_commission_",
+   "fieldtype": "Percent",
+   "label": "Rep Commission %"
+  },
+  {
+   "depends_on": "eval: doc.has_representative_commission == 1;\neval: doc.rep_commission_type == \"Amount\";",
+   "fieldname": "rep_commission_amount",
+   "fieldtype": "Currency",
+   "label": "Rep Commission Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-02-02 11:19:37.286627",
+ "modified": "2024-02-14 12:23:20.370645",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Stock Order Items",

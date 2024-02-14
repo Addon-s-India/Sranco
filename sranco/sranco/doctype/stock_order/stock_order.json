@@ -14,7 +14,7 @@
   "purchase_order",
   "order_attach",
   "column_break_poczo",
-  "date",
+  "gi_date",
   "contact_person",
   "section_break_1xsrt",
   "items",
@@ -54,11 +54,6 @@
   {
    "fieldname": "column_break_poczo",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "date",
-   "fieldtype": "Date",
-   "label": "Date"
   },
   {
    "fieldname": "section_break_1xsrt",
@@ -110,7 +105,8 @@
   },
   {
    "fieldname": "section_break_namyu",
-   "fieldtype": "Section Break"
+   "fieldtype": "Tab Break",
+   "label": "Terms"
   },
   {
    "fieldname": "terms_and_conditions",
@@ -121,7 +117,7 @@
   {
    "fetch_from": "terms_and_conditions.terms",
    "fieldname": "terms",
-   "fieldtype": "Data",
+   "fieldtype": "Text Editor",
    "label": "Terms"
   },
   {
@@ -129,12 +125,17 @@
    "fieldtype": "Link",
    "label": "Contact Person",
    "options": "Contact"
+  },
+  {
+   "fieldname": "gi_date",
+   "fieldtype": "Date",
+   "label": "GI Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-02-02 18:10:38.450379",
+ "modified": "2024-02-14 12:01:49.721649",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Stock Order",
