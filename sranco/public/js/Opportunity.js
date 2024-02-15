@@ -82,6 +82,15 @@ frappe.ui.form.on("Opportunity Item", {
                     console.log("response :: ", response.message);
                     if (response.message) {
                         row.rate = response.message[0].price_list_rate;
+                        row.base_rate = row.rate;
+                        if (row.qty == 0) {
+                            row.amount = 1 * row.rate;
+                            row.base_amount = 1 * row.base_rate;
+                        } else {
+                            row.amount = row.qty * row.rate;
+                            row.base_amount = row.qty * row.base_rate;
+                        }
+                        frm.refresh_field("items");
                         row.uom = response.message[0].uom;
                         frm.refresh_field("items");
                     }
@@ -163,15 +172,37 @@ function set_field_visibility(row, frm) {
         frm.fields_dict["items"].grid.toggle_display("item_code", false);
         frm.fields_dict["items"].grid.toggle_display("item_name", false);
         frm.fields_dict["items"].grid.toggle_reqd("rate", false);
+        frm.fields_dict["items"].grid.toggle_reqd("base_rate", false);
+        frm.fields_dict["items"].grid.toggle_reqd("amount", false);
+        frm.fields_dict["items"].grid.toggle_reqd("base_amount", false);
         // clear item_code and item_name
         row.item_code = "";
         row.item_name = "";
     } else {
         frm.fields_dict["items"].grid.toggle_display("item_code", true);
         frm.fields_dict["items"].grid.toggle_display("item_name", true);
-        frm.fields_dict["items"].grid.toggle_reqd("rate", false);
+        frm.fields_dict["items"].grid.toggle_reqd("rate", true);
+        frm.fields_dict["items"].grid.toggle_reqd("base_rate", true);
+        frm.fields_dict["items"].grid.toggle_reqd("amount", true);
+        frm.fields_dict["items"].grid.toggle_reqd("base_amount", true);
         // clear item code and item name
         row.item_code = "";
         row.item_name = "";
     }
 }
+
+// function update_amount_rate(frm, cdt, cdn) {
+//     var row = locals[cdt][cdn];
+//     if (row.rate) {
+//         row.rate = row.base_rate;
+//         row.amount = row.qty * row.rate;
+//         row.base_amount = row.qty * row.base_rate;
+//         frm.refresh_field("items");
+//     }
+//     if (row.rate) {
+//         row.base_rate = row.rate;
+//         row.amount = row.qty * row.rate;
+//         row.base_amount = row.qty * row.base_rate;
+//         frm.refresh_field("items");
+//     }
+// }

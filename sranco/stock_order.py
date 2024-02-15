@@ -20,16 +20,16 @@ def stock_order_on_submit(doc, method):
     
     # Copy the relevant fields from Sales Order to Purchase Order
     po.customer = doc.customer
-    po.delivery_date = doc.date
+    po.delivery_date = doc.gi_date
     po.custom_order_confirmation = doc.order_confirmation
-    po.schedule_date = doc.date
+    po.schedule_date = doc.gi_date
     po.supplier = "Default"
     
     # Loop through Sales Order items and append to Purchase Order
     for item in doc.items:
         po_item = po.append('items', {})
         po_item.item_code = item.item_code
-        po_item.expected_delivery_date = doc.date
+        po_item.expected_delivery_date = item.gi_date
         po_item.item_name = item.item_name
         po_item.qty = item.qty
         po_item.uom = item.uom
@@ -120,14 +120,14 @@ def custom_stock_order_query(doctype, txt, searchfield, start, page_len, filters
         customer_filter = "AND so.customer = %(customer)s"
 
     return frappe.db.sql(f"""
-        SELECT so.name, so.order_confirmation, so.date
+        SELECT so.name, so.order_confirmation, so.gi_date
         FROM `tabStock Order` so
         JOIN `tabStock Order Items` soi ON so.name = soi.parent
         WHERE so.docstatus = 1
             AND soi.item_code = %(item_code)s
             {customer_filter}
             AND (so.{searchfield} LIKE %(txt)s)
-        ORDER BY so.date ASC, so.name ASC
+        ORDER BY so.gi_date ASC, so.name ASC
         LIMIT %(start)s, %(page_len)s
     """, {
         'item_code': filters.get('item_code'),

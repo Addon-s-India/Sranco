@@ -351,7 +351,12 @@ function get_item_price_data(frm, cdt, cdn, row) {
                     "snc_commission_",
                     r.message.custom_snc_commission_
                 );
-                frappe.model.set_value(cdt, cdn, "snc_commission_lumpsum");
+                frappe.model.set_value(
+                    cdt,
+                    cdn,
+                    "snc_commission_lumpsum",
+                    r.message.custom_snc_commission_lumpsum
+                );
                 if (r.message.custom_snc_commission_lumpsum) {
                     frappe.model.set_value(
                         cdt,
