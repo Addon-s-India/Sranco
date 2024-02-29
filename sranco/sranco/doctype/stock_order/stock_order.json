@@ -11,9 +11,11 @@
   "customer",
   "customer_name",
   "order_confirmation",
+  "order_confirmation_date",
   "purchase_order",
   "order_attach",
   "column_break_poczo",
+  "date",
   "gi_date",
   "contact_person",
   "section_break_1xsrt",
@@ -129,13 +131,24 @@
   {
    "fieldname": "gi_date",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "GI Date"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "order_confirmation_date",
+   "fieldtype": "Date",
+   "label": "Order Confirmation Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-02-14 12:01:49.721649",
+ "modified": "2024-02-29 17:30:59.648929",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Stock Order",

@@ -18,6 +18,7 @@
   "column_break_edms7",
   "order_confirmation",
   "tn_number",
+  "sequence_no",
   "customer",
   "total_quantity_to_ship",
   "warehouse",
@@ -35,6 +36,7 @@
   {
    "fieldname": "purchase_order",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Purchase Order",
    "options": "Purchase Order"
   },
@@ -46,6 +48,7 @@
   {
    "fieldname": "item_code",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Item Code",
    "options": "Item"
   },
@@ -53,6 +56,7 @@
    "fetch_from": "item_code.item_name",
    "fieldname": "item_name",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Item Name"
   },
   {
@@ -75,6 +79,7 @@
   {
    "fieldname": "total_quantity_to_ship",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Total Quantity to Ship"
   },
   {
@@ -116,13 +121,19 @@
   {
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date"
+   "label": "Sales Order Date"
+  },
+  {
+   "fieldname": "sequence_no",
+   "fieldtype": "Int",
+   "label": "Sequence No.",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-02-11 20:59:42.340186",
+ "modified": "2024-02-29 18:19:01.602447",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Shipment Tracker",

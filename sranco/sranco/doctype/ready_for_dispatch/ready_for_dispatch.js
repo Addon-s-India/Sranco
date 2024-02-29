@@ -78,6 +78,28 @@ frappe.ui.form.on("Ready For Dispatch", {
                     }
                 },
             });
+
+            frappe.call({
+                method: "frappe.client.get_list",
+                args: {
+                    doctype: "Sales Order",
+                    filters: {
+                        custom_order_confirmation: frm.doc.order_confirmation,
+                    },
+                    fields: ["name", "po_no"],
+                },
+                callback: function (response) {
+                    if (response.message && response.message[0].po_no) {
+                        console.log("response.message", response.message);
+                        cur_frm.set_value(
+                            "customers_purchase_order",
+                            response.message[0].po_no
+                        );
+                    } else {
+                        frappe.show_alert("No Customer's Purchase Order No.");
+                    }
+                },
+            });
         }
     },
 });
@@ -124,6 +146,7 @@ function fetch_purchase_order_items(purchase_order_name, frm) {
                         sequence_no: item.idx,
                         item_name: item.item_name,
                         item_code: item.item_code,
+                        gi_date: item.schedule_date,
                         tn_number: item.custom_tn_number,
                         customer_item_code: item.custom_customer_item_code,
                         qty: item.qty,

@@ -37,6 +37,7 @@ frappe.ui.form.on("Sales Order", {
 
         calc_total_rep_commission(frm);
         calc_total_snc_commission(frm);
+        hide_fields(frm);
     },
     // refresh: function (frm) {
     //   $.each(cur_frm.doc.items, function (i, item) {
@@ -52,6 +53,7 @@ frappe.ui.form.on("Sales Order", {
     //   });
 
     refresh: function (frm, cdt, cdn) {
+        hide_fields(frm);
         if (frm.doc.docstatus !== 1) {
             frm.fields_dict["items"].grid.add_custom_button(
                 __("Get Qty from Stock Order"),
@@ -120,6 +122,7 @@ frappe.ui.form.on("Sales Order", {
         //   frappe.validated = false; // Prevent submission
         // }
         if (frm.doc.items.length > 0) {
+            frm.fields_dict["items"].grid.toggle_reqd("delivery_date", true);
             frm.doc.items.forEach(function (item) {
                 if (!item.custom_order_confirmation) {
                     frappe.msgprint(
@@ -132,6 +135,9 @@ frappe.ui.form.on("Sales Order", {
                 }
             });
         }
+    },
+    before_save: function (frm) {
+        frm.fields_dict["items"].grid.toggle_reqd("delivery_date", false);
     },
 });
 
@@ -533,24 +539,27 @@ function get_qty_from_stock_order(frm) {
                                     original_item.custom_order_confirmation =
                                         stock_order.order_confirmation;
                                 } else {
-                                    // Create new rows for additional stock orders
+                                    // Create new rows for additional stock orders with correct handling
                                     var new_item = frm.add_child("items");
-                                    for (var key in original_item) {
-                                        if (
-                                            original_item.hasOwnProperty(key) &&
-                                            ![
-                                                "qty",
-                                                "custom_stock_order",
-                                                "purchase_order",
-                                                "custom_order_confirmation",
-                                                "name",
-                                                "idx",
-                                            ].includes(key)
-                                        ) {
-                                            new_item[key] = original_item[key];
+                                    Object.keys(original_item).forEach(
+                                        function (key) {
+                                            if (
+                                                ![
+                                                    "qty",
+                                                    "custom_stock_order",
+                                                    "purchase_order",
+                                                    "custom_order_confirmation",
+                                                    "name",
+                                                    "idx",
+                                                ].includes(key)
+                                            ) {
+                                                new_item[key] =
+                                                    original_item[key];
+                                            }
                                         }
-                                    }
-                                    new_item.qty = stock_order.qty; // Set qty from stock order
+                                    );
+                                    // Set quantities and details from subsequent stock orders
+                                    new_item.qty = stock_order.qty;
                                     new_item.custom_stock_order =
                                         stock_order.stock_order;
                                     new_item.purchase_order =
@@ -620,4 +629,9 @@ function calc_total_snc_commission(frm) {
     });
     frm.set_value("custom_total_snc_commission", total_snc_commission);
     frm.refresh_field("custom_total_snc_commission");
+}
+
+function hide_fields(frm) {
+    frm.toggle_display("accounting_dimensions_section", false);
+    frm.toggle_display("currency_and_price_list", false);
 }

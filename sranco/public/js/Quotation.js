@@ -135,6 +135,7 @@ frappe.ui.form.on("Quotation Item", {
                     filters: {
                         item_code: row.item_code,
                         customer: frm.doc.party_name,
+                        selling: 1,
                     },
                     fields: [
                         "name",
@@ -273,6 +274,32 @@ frappe.ui.form.on("Quotation Item", {
                             r.message.custom_application
                         );
 
+                        frm.refresh_field("items");
+                    }
+                },
+            });
+
+            frappe.call({
+                method: "frappe.client.get_list",
+                args: {
+                    doctype: "Item Price",
+                    filters: {
+                        item_code: row.item_code,
+                        customer: frm.doc.party_name,
+                        buying: 1,
+                    },
+                    fields: ["name", "price_list_rate"],
+                },
+                callback: function (r) {
+                    console.log("item price :: ", r.message);
+                    if (r.message.length > 0) {
+                        console.log("item price :: ", r.message);
+                        frappe.model.set_value(
+                            cdt,
+                            cdn,
+                            "custom_tyrolit_rate",
+                            r.message[0].price_list_rate
+                        );
                         frm.refresh_field("items");
                     }
                 },

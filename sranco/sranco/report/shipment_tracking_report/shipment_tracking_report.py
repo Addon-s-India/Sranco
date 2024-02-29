@@ -23,7 +23,8 @@ def get_columns():
         {"label": _("Order Confirmation"), "fieldname": "order_confirmation", "width": 160},
         {"label": _("TN Number"), "fieldname": "tn_number", "width": 140},
         {"label": _("Customer"), "fieldname": "customer", "fieldtype": "Link", "options": "Customer", "width": 120},
-        {"label": _("Total Quantity to Ship"), "fieldname": "total_quantity_to_ship", "fieldtype": "Float", "width": 170},
+        {"label": _("Position"), "fieldname": "position", "fieldtype": "Int",  "width": 50},
+        # {"label": _("Total Quantity to Ship"), "fieldname": "total_quantity_to_ship", "fieldtype": "Float", "width": 170},
         {"label": _("Mode"), "fieldname": "mode", "width": 100},
         {"label": _("Quantity"), "fieldname": "quantity", "fieldtype": "Float", "width": 100},
         {"label": _("Received Qty"), "fieldname": "received_qty", "fieldtype": "Float", "width": 120},
@@ -62,12 +63,12 @@ def get_data(filters):
             st.order_confirmation,
             st.tn_number,
             st.customer,
-            st.total_quantity_to_ship,
             tmt.mode,
             tmt.quantity,
             tmt.received_qty,
             (tmt.quantity - tmt.received_qty) AS balance_qty,
-            tmt.eod
+            tmt.eod,
+            tmt.sequence_no as position
         FROM
             `tabShipment Tracker` AS st
         JOIN

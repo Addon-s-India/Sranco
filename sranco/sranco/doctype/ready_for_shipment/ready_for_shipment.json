@@ -11,6 +11,7 @@
   "customer",
   "column_break_7ccel",
   "date",
+  "customers_purchase_order",
   "purchase_order",
   "sales_order",
   "section_break_xcf6t",
@@ -51,6 +52,7 @@
   {
    "fieldname": "purchase_order",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Purchase Order",
    "options": "Purchase Order",
    "read_only": 1
@@ -61,12 +63,17 @@
    "label": "Sales Order",
    "options": "Sales Order",
    "read_only": 1
+  },
+  {
+   "fieldname": "customers_purchase_order",
+   "fieldtype": "Data",
+   "label": "Customer's Purchase Order"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-02-11 20:44:38.296515",
+ "modified": "2024-02-29 17:00:28.607893",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Ready for Shipment",

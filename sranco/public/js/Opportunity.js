@@ -8,10 +8,12 @@ frappe.ui.form.on("Opportunity", {
             };
         // Check visibility on load
         update_field_visibility(frm);
+        hide_fields(frm);
     },
     refresh: function (frm) {
         // Check visibility on refresh
         update_field_visibility(frm);
+        hide_fields(frm);
     },
     before_save: function (frm) {
         frm.doc.items.forEach(function (item) {
@@ -181,7 +183,7 @@ function set_field_visibility(row, frm) {
     } else {
         frm.fields_dict["items"].grid.toggle_display("item_code", true);
         frm.fields_dict["items"].grid.toggle_display("item_name", true);
-        frm.fields_dict["items"].grid.toggle_reqd("rate", true);
+        frm.fields_dict["items"].grid.toggle_reqd("rate", false);
         frm.fields_dict["items"].grid.toggle_reqd("base_rate", true);
         frm.fields_dict["items"].grid.toggle_reqd("amount", true);
         frm.fields_dict["items"].grid.toggle_reqd("base_amount", true);
@@ -206,3 +208,14 @@ function set_field_visibility(row, frm) {
 //         frm.refresh_field("items");
 //     }
 // }
+
+function hide_fields(frm) {
+    frm.toggle_display("organization_details_section", false);
+    frm.toggle_display("section_break_14", false);
+    frm.toggle_display("opportunity_type", false);
+    frm.toggle_display("sales_stage", false);
+    frm.toggle_display("source", false);
+    frm.toggle_display("expected_closing", false);
+    frm.toggle_display("opportunity_owner", false);
+    frm.toggle_display("probability", false);
+}

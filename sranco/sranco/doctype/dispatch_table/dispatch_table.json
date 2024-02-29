@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "sequence_no",
+  "gi_date",
   "item_code",
   "customer_item_code",
   "item_name",
@@ -62,12 +63,18 @@
    "fieldtype": "Data",
    "label": "Customer Item Code",
    "read_only": 1
+  },
+  {
+   "description": "Delivery Date in Item of related Sales Order",
+   "fieldname": "gi_date",
+   "fieldtype": "Date",
+   "label": "GI Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-01-08 17:44:51.417560",
+ "modified": "2024-02-29 18:04:36.306854",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Dispatch Table",

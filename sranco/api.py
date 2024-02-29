@@ -137,7 +137,7 @@ def create_gi_date_tracker_and_update_po(dispatch_data, date):
             # Create and submit GI Date Tracker
             gi_date_tracker = frappe.new_doc('GI Date Tracker')
             gi_date_tracker.sequence_no = (row['sequence_no'])
-            gi_date_tracker.date = date
+            gi_date_tracker.date = row['gi_date']
             gi_date_tracker.item_code = row['item_code']
             gi_date_tracker.item_name = row['item_name']
             gi_date_tracker.tn_number = row['tn_number']
@@ -183,13 +183,13 @@ def create_shipment_tracker_and_update_po(shipment_data, purchase_order, sales_o
             if row['update_shipment_qty'] <= 0 or row['update_shipment_qty'] > row['ready_qty'] - row['shipment_qty'] or total_transport_qty != row['update_shipment_qty']:
                 skipped_items.append(row['item_code'])
                 continue  # Skip this iteration and move to the next row
-
+            sales_order_data = frappe.get_doc("Sales Order", sales_order)
             # Create Shipment Tracker
             shipment_tracker = frappe.new_doc('Shipment Tracker')
             
             # Populate the main fields from row data
             shipment_tracker.sales_order = sales_order
-            shipment_tracker.date = date
+            shipment_tracker.gi_date = row['delivery_date']
             shipment_tracker.purchase_order = purchase_order
             shipment_tracker.sequence_no = row['sequence_no']
             shipment_tracker.item_code = row['item_code']
@@ -206,9 +206,10 @@ def create_shipment_tracker_and_update_po(shipment_data, purchase_order, sales_o
                 if row.get(mode_field):  # If the mode has a quantity
                     transport_mode = frappe.get_doc('Transport Mode', mode_name)
                     shipment_tracker.append('transport_mode_table', {
+                        'sequence_no': row['sequence_no'],  # This is the same as the sequence_no in GI Date Tracker
                         'mode': mode_name,
                         'quantity': row[mode_field],
-                        'eod': add_days(today(), transport_mode.days)  # Calculate the eod based on days in Transport Mode doctype
+                        'eod': add_days(row['delivery_date'], transport_mode.days)  # Calculate the eod based on days in Transport Mode doctype
                     })
 
             shipment_tracker.insert()

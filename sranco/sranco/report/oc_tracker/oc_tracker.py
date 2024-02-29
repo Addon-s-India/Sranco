@@ -121,7 +121,7 @@ def get_data(filters):
             po.customer,
             cu.customer_name,
             poi.item_code,
-            poi.idx as seq_no,
+            CAST(poi.idx AS CHAR) as seq_no,
             poi.custom_tn_number,
             it.custom_shape as shape,
             it.custom_diameter as diameter,

@@ -14,16 +14,15 @@ frappe.ui.form.on("Stock Order", {
         });
     },
     gi_date: function (frm) {
-        console.log("gi_date", frm.doc.gi_date);
         // set gi_date in all the items
         frm.doc.items.forEach(function (item) {
-            item.gi_date = frm.doc.gi_date;
+            item.gi_date = frm.doc.date;
         });
         frm.refresh_field("items");
     },
     items_add: function (frm, cdt, cdn) {
         var row = locals[cdt][cdn];
-        row.gi_date = frm.doc.gi_date;
+        row.gi_date = frm.doc.date;
     },
     onload: function (frm) {
         frm.fields_dict["items"].grid.get_field("item_code").get_query =
@@ -49,7 +48,7 @@ frappe.ui.form.on("Stock Order", {
             frm.doc.items.forEach(function (item) {
                 item.order_confirmation = frm.doc.order_confirmation;
                 if (item.gi_date == null) {
-                    item.gi_date = frm.doc.gi_date;
+                    item.gi_date = frm.doc.date;
                 }
             });
         }
@@ -291,7 +290,7 @@ frappe.ui.form.on("Stock Order Items", {
     },
     items_add: function (frm, cdt, cdn) {
         var row = locals[cdt][cdn];
-        row.gi_date = frm.doc.gi_date;
+        row.gi_date = frm.doc.date;
     },
 });
 

@@ -101,6 +101,28 @@ function fetch_purchase_order_for_shipment(order_confirmation) {
             }
         },
     });
+
+    frappe.call({
+        method: "frappe.client.get_list",
+        args: {
+            doctype: "Sales Order",
+            filters: {
+                custom_order_confirmation: order_confirmation,
+            },
+            fields: ["name", "po_no"],
+        },
+        callback: function (response) {
+            if (response.message && response.message[0].po_no) {
+                console.log("response.message", response.message);
+                cur_frm.set_value(
+                    "customers_purchase_order",
+                    response.message[0].po_no
+                );
+            } else {
+                frappe.show_alert("No Customer's Purchase Order No.");
+            }
+        },
+    });
 }
 
 function fetch_purchase_order_items(purchase_order_data) {
@@ -126,8 +148,11 @@ function fetch_purchase_order_items(purchase_order_data) {
                         sequence_no: item.idx,
                         item_name: item.item_name,
                         item_code: item.item_code,
+                        delivery_date: item.schedule_date,
                         ready_qty: item.custom_ready_qty,
                         shipment_qty: item.custom_shipped_qty,
+                        remaining_shipment_qty:
+                            item.custom_ready_qty - item.custom_shipped_qty,
                         tn_number: item.custom_tn_number,
                         customer_item_code: item.custom_customer_item_code,
                         customer: purchase_order.customer,
@@ -212,6 +237,15 @@ function fetch_updated_shipment_qty_and_update_child_table(frm) {
                             "shipment_qty",
                             matching_po_item.custom_shipped_qty
                         );
+
+                        frappe.model.set_value(
+                            row.doctype,
+                            row.name,
+                            "remaining_shipment_qty",
+                            matching_po_item.custom_ready_qty -
+                                matching_po_item.custom_shipped_qty
+                        );
+
                         // Reset the values of update_shipment_qty, air_qty, express_qty, and sea_qty
                         frappe.model.set_value(
                             row.doctype,

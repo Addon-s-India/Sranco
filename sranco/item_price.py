@@ -11,6 +11,7 @@ def validate(doc, method):
         
         # get the ref_code from customer_items child table with matching customer_name in item_price
         ref_code = frappe.db.get_value('Item Customer Detail', {'parent': doc.item_code, 'customer_name': doc.custom_customer_name}, 'ref_code')
+        doc.custom_customer_item_code = ref_code
         
         doc.append('custom_price_history', {
             'price': doc.price_list_rate,
@@ -27,7 +28,7 @@ def validate(doc, method):
         
         # get the ref_code from customer_items child table with matching customer_name in item_price
         ref_code = frappe.db.get_value('Item Customer Detail', {'parent': doc.item_code, 'customer_name': doc.custom_customer_name}, 'ref_code')
-
+        doc.custom_customer_item_code = ref_code
         # Check if the last entry in the price history is different from the current price_list_rate
         last_entry = doc.custom_price_history[-1] if doc.custom_price_history else None
         if not last_entry or round(last_entry.price, 2) != round(doc.price_list_rate, 2):

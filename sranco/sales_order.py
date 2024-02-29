@@ -9,6 +9,7 @@ logger = frappe.logger("Sranco_logs", allow_site=True, file_count=1)
 def on_submit(doc, method):
     item_price_update(doc, method)
     sales_order_on_submit(doc, method)
+    update_customer_item_code(doc, method)
 
 
 def item_price_update(doc, method):    
@@ -108,6 +109,7 @@ def sales_order_on_submit(doc, method):
         if not item.purchase_order:
             po_item = po.append('items', {})
             po_item.item_code = item.item_code
+            po_item.schedule_date = doc.delivery_date
             po_item.expected_delivery_date = doc.delivery_date
             po_item.item_name = item.item_name
             po_item.description = item.description
@@ -151,6 +153,41 @@ def sales_order_on_submit(doc, method):
     frappe.msgprint(_("Purchase Order {0} created successfully!").format(po.name))
 
 
+def update_customer_item_code(doc, method):
+    # Iterate through each item in the sales order
+    try:
+        for item in doc.items:
+            item_code = item.item_code
+            custom_customer_item_code = item.custom_customer_item_code
+
+            # Fetch the corresponding Item document
+            item_doc = frappe.get_doc("Item", item_code)
+            
+            # Track if a matching customer item is found
+            found = False
+
+            # Check if the customer exists in the item's customer_items
+            for customer_item in item_doc.customer_items:
+                if customer_item.customer_name == doc.customer:
+                    # If found, update the ref_code
+                    customer_item.ref_code = custom_customer_item_code
+                    found = True
+                    break
+            
+            if not found:
+                # If not found, add a new customer item entry
+                item_doc.append("customer_items", {
+                    "customer_name": doc.customer,
+                    "ref_code": custom_customer_item_code
+                })
+            
+            # Save the Item document
+            item_doc.save()
+            frappe.msgprint(_("Updated customer item code for {0}").format(item_code), alert=True)
+            
+    except Exception as e:
+        frappe.msgprint(_("Error updating customer item code: {0}").format(str(e)), alert=True)
+        logger.error(f"Error updating customer item code: {str(e)}")
 
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs

@@ -11,6 +11,7 @@
   "customer",
   "column_break_y6wlb",
   "date",
+  "customers_purchase_order",
   "sales_order",
   "purchase_order",
   "section_break_ijq1z",
@@ -66,12 +67,17 @@
   {
    "fieldname": "column_break_y6wlb",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customers_purchase_order",
+   "fieldtype": "Data",
+   "label": "Customer's Purchase Order"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-02-11 20:58:08.688667",
+ "modified": "2024-02-29 16:27:46.787005",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Ready For Dispatch",
