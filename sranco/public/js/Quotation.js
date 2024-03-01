@@ -70,6 +70,14 @@ frappe.ui.form.on("Quotation", {
                     },
                 });
             }
+            if (item.custom_tyrolit_rate == 0 || !item.custom_tyrolit_rate) {
+                frappe.msgprint(
+                    __("Please enter Tyrolit Rate for the item: {0}", [
+                        item.item_code,
+                    ])
+                );
+                frappe.validated = false;
+            }
         });
     },
 });
