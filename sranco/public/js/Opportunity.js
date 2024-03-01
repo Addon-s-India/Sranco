@@ -17,6 +17,13 @@ frappe.ui.form.on("Opportunity", {
     },
     before_save: function (frm) {
         frm.doc.items.forEach(function (item) {
+            if (item.custom_new_enquiry == 1) {
+                frm.fields_dict["items"].grid.toggle_reqd("rate", false);
+                frm.fields_dict["items"].grid.toggle_reqd("base_rate", false);
+                frm.fields_dict["items"].grid.toggle_reqd("amount", false);
+                frm.fields_dict["items"].grid.toggle_reqd("base_amount", false);
+            }
+            // update_field_visibility(frm);
             // Existing logic for custom new enquiry
             // if (
             //   item.custom_new_enquiry == 1 &&
@@ -155,10 +162,23 @@ frappe.ui.form.on("Opportunity Item", {
                         //     false
                         // );
                         frm.fields_dict["items"].grid.toggle_reqd("rate", true);
+                        console.log(
+                            "before save triggered the rate requirement"
+                        );
                         frm.refresh_field("items");
                     }
                 },
             });
+        }
+    },
+    qty: function (frm, cdt, cdn) {
+        var row = locals[cdt][cdn];
+        if (row.custom_new_enquiry == 1) {
+            row.rate = 0;
+            row.base_rate = 0;
+            row.amount = null;
+            row.base_amount = null;
+            frm.refresh_field("items");
         }
     },
 });
@@ -180,16 +200,22 @@ function set_field_visibility(row, frm) {
         // clear item_code and item_name
         row.item_code = "";
         row.item_name = "";
+        row.rate = 0;
+        row.base_rate = 0;
+        row.amount = null;
+        row.base_amount = null;
+        frm.refresh_field("items");
     } else {
         frm.fields_dict["items"].grid.toggle_display("item_code", true);
         frm.fields_dict["items"].grid.toggle_display("item_name", true);
-        frm.fields_dict["items"].grid.toggle_reqd("rate", false);
+        frm.fields_dict["items"].grid.toggle_reqd("rate", true);
         frm.fields_dict["items"].grid.toggle_reqd("base_rate", true);
         frm.fields_dict["items"].grid.toggle_reqd("amount", true);
         frm.fields_dict["items"].grid.toggle_reqd("base_amount", true);
         // clear item code and item name
         row.item_code = "";
         row.item_name = "";
+        frm.refresh_field("items");
     }
 }
 
