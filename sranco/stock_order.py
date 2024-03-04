@@ -30,6 +30,7 @@ def stock_order_on_submit(doc, method):
         po_item = po.append('items', {})
         po_item.item_code = item.item_code
         po_item.expected_delivery_date = item.gi_date
+        po_item.schedule_date = item.gi_date
         po_item.item_name = item.item_name
         po_item.qty = item.qty
         po_item.uom = item.uom
