@@ -10,6 +10,7 @@ def on_submit(doc, method):
     item_price_update(doc, method)
     sales_order_on_submit(doc, method)
     update_customer_item_code(doc, method)
+    update_stock_order(doc, method)
 
 
 def item_price_update(doc, method):    
@@ -94,6 +95,7 @@ def sales_order_on_submit(doc, method):
         frappe.msgprint(_("All items have a Purchase Order, so skipping PO creation"))
         return
     
+           
     # Create a new Purchase Order
     po = frappe.new_doc("Purchase Order")
     
@@ -127,8 +129,16 @@ def sales_order_on_submit(doc, method):
         if not item.purchase_order:
             item.purchase_order = po.name
     po.submit()
-    logger.info(f"Stock Order Items {doc.items}")
-    # Update Stock Order items with sales quantities
+    logger.info(f"Stock Order Items {doc.items}")            
+            
+    logger.info(f"Purchase Order {po.name} created successfully!")
+
+    # Add a comment in the Sales Order indicating the Purchase Order creation
+    frappe.msgprint(_("Purchase Order {0} created successfully!").format(po.name))
+
+
+def update_stock_order(doc, method):
+        # Update Stock Order items with sales quantities
     for item in doc.items:
         logger.info(f"Sales Order Stock Order Items {item.custom_stock_order}")
         if item.custom_stock_order:
@@ -144,13 +154,7 @@ def sales_order_on_submit(doc, method):
                 stock_order.sales_qty += item.qty
                 logger.info(f"Updated Stock Order {stock_order.name} with sales quantity {item.qty}")
                 stock_order.save()
-                frappe.msgprint(f"Updated Stock Order {stock_order.name} with sales quantity {item.qty}")
-            
-            
-    logger.info(f"Purchase Order {po.name} created successfully!")
-
-    # Add a comment in the Sales Order indicating the Purchase Order creation
-    frappe.msgprint(_("Purchase Order {0} created successfully!").format(po.name))
+                frappe.msgprint(f"Updated Stock Order {stock_order.name} with sales quantity {item.qty}", alert=True)
 
 
 def update_customer_item_code(doc, method):

@@ -1501,7 +1501,7 @@
    "is_virtual": 0,
    "label": "Order Confirmation",
    "length": 0,
-   "mandatory_depends_on": null,
+   "mandatory_depends_on": "eval: doc.custom_stock_order === null;",
    "modified": "2023-10-26 16:24:32.507127",
    "modified_by": "Administrator",
    "module": null,

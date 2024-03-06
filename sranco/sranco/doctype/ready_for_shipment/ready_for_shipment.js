@@ -53,6 +53,12 @@ frappe.ui.form.on("Ready for Shipment", {
 frappe.ui.form.on("Shipment Table", {
     update_shipment_qty: function (frm, cdt, cdn) {
         let row = locals[cdt][cdn];
+        console.log("row :: ", row);
+        console.log(
+            "row.ready_qty - row.shipment_qty :: ",
+            row.ready_qty - row.shipment_qty
+        );
+        console.log("row.update_shipment_qty :: ", row.update_shipment_qty);
         if (row.update_shipment_qty !== row.ready_qty - row.shipment_qty) {
             frappe.model.set_value(cdt, cdn, "update_shipment_qty", 0.0);
             frappe.msgprint(
@@ -181,7 +187,7 @@ function apply_shipment_changes(frm) {
             row.air_qty + row.express_qty + row.sea_qty ===
                 row.update_shipment_qty
     );
-
+    console.log("valid_rows :: ", valid_rows);
     if (valid_rows.length) {
         create_shipment_tracker_and_update_po(frm);
     } else {
