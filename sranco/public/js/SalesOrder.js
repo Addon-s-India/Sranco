@@ -509,103 +509,137 @@ function update_snc_commission(frm, cdt, cdn) {
 function get_qty_from_stock_order(frm) {
     if (frm.doc.items.length > 0 && frm.doc.docstatus !== 1) {
         console.log("items", frm.doc.items);
-        frm.doc.items.forEach(function (original_item) {
-            if (original_item.custom_tn_number) {
-                console.log("tn_number", original_item.custom_tn_number);
-                frappe.call({
-                    method: "sranco.stock_order.get_qty_from_stock_order",
-                    args: {
-                        tn_number: original_item.custom_tn_number,
-                        required_qty: original_item.qty,
-                    },
-                    callback: function (response) {
-                        console.log("response", response, original_item.qty);
-                        const itemQty = original_item.qty;
-                        if (response.message && response.message.length > 0) {
-                            let totalQtyCovered = 0;
-                            response.message.forEach(function (
-                                stock_order,
-                                index
+        // Convert each frappe.call into a Promise and collect them in an array
+        let promises = frm.doc.items.map((original_item) => {
+            // Only proceed if the condition is met
+            if (
+                original_item.custom_tn_number &&
+                original_item.custom_stock_order === undefined
+            ) {
+                return new Promise((resolve, reject) => {
+                    frappe.call({
+                        method: "sranco.stock_order.get_qty_from_stock_order",
+                        args: {
+                            tn_number: original_item.custom_tn_number,
+                            required_qty: original_item.qty,
+                        },
+                        callback: function (response) {
+                            console.log(
+                                "response",
+                                response,
+                                original_item.qty
+                            );
+                            const itemQty = original_item.qty;
+                            if (
+                                response.message &&
+                                response.message.length > 0
                             ) {
-                                totalQtyCovered += parseFloat(stock_order.qty);
-
-                                if (index === 0) {
-                                    // Update the current row with the first stock order details
-                                    original_item.qty = stock_order.qty;
-                                    original_item.custom_stock_order =
-                                        stock_order.stock_order;
-                                    original_item.purchase_order =
-                                        stock_order.purchase_order;
-                                    original_item.custom_order_confirmation =
-                                        stock_order.order_confirmation;
-                                } else {
-                                    // Create new rows for additional stock orders with correct handling
-                                    var new_item = frm.add_child("items");
-                                    Object.keys(original_item).forEach(
-                                        function (key) {
-                                            if (
-                                                ![
-                                                    "qty",
-                                                    "custom_stock_order",
-                                                    "purchase_order",
-                                                    "custom_order_confirmation",
-                                                    "name",
-                                                    "idx",
-                                                ].includes(key)
-                                            ) {
-                                                new_item[key] =
-                                                    original_item[key];
-                                            }
-                                        }
+                                let totalQtyCovered = 0;
+                                response.message.forEach(function (
+                                    stock_order,
+                                    index
+                                ) {
+                                    totalQtyCovered += parseFloat(
+                                        stock_order.qty
                                     );
-                                    // Set quantities and details from subsequent stock orders
-                                    new_item.qty = stock_order.qty;
-                                    new_item.custom_stock_order =
-                                        stock_order.stock_order;
-                                    new_item.purchase_order =
-                                        stock_order.purchase_order;
-                                    new_item.custom_order_confirmation =
-                                        stock_order.order_confirmation;
-                                }
-                            });
 
-                            // Check if there is remaining quantity after utilizing all stock orders
-                            const remainingQty =
-                                parseFloat(itemQty) - totalQtyCovered;
-                            if (remainingQty > 0) {
-                                var new_item = frm.add_child("items");
-                                for (var key in original_item) {
-                                    if (
-                                        original_item.hasOwnProperty(key) &&
-                                        ![
-                                            "qty",
-                                            "custom_stock_order",
-                                            "purchase_order",
-                                            "custom_order_confirmation",
-                                            "name",
-                                            "idx",
-                                        ].includes(key)
-                                    ) {
-                                        new_item[key] = original_item[key];
+                                    if (index === 0) {
+                                        // Update the current row with the first stock order details
+                                        original_item.qty = stock_order.qty;
+                                        original_item.custom_stock_order =
+                                            stock_order.stock_order;
+                                        original_item.purchase_order =
+                                            stock_order.purchase_order;
+                                        original_item.custom_order_confirmation =
+                                            stock_order.order_confirmation;
+                                    } else {
+                                        // Create new rows for additional stock orders with correct handling
+                                        var new_item = frm.add_child("items");
+                                        Object.keys(original_item).forEach(
+                                            function (key) {
+                                                if (
+                                                    ![
+                                                        "qty",
+                                                        "custom_stock_order",
+                                                        "purchase_order",
+                                                        "custom_order_confirmation",
+                                                        "name",
+                                                        "idx",
+                                                    ].includes(key)
+                                                ) {
+                                                    new_item[key] =
+                                                        original_item[key];
+                                                }
+                                            }
+                                        );
+                                        // Set quantities and details from subsequent stock orders
+                                        new_item.qty = stock_order.qty;
+                                        new_item.custom_stock_order =
+                                            stock_order.stock_order;
+                                        new_item.purchase_order =
+                                            stock_order.purchase_order;
+                                        new_item.custom_order_confirmation =
+                                            stock_order.order_confirmation;
                                     }
-                                }
-                                new_item.qty = remainingQty; // Set remaining qty
-                                // Reset stock order related fields for the remaining quantity
-                                new_item.custom_stock_order = "";
-                                new_item.purchase_order = "";
-                                new_item.custom_order_confirmation = "";
-                            }
+                                });
 
-                            frm.refresh_fields();
-                            frm.refresh();
-                        }
-                    },
+                                // Check if there is remaining quantity after utilizing all stock orders
+                                const remainingQty =
+                                    parseFloat(itemQty) - totalQtyCovered;
+                                if (remainingQty > 0) {
+                                    var new_item = frm.add_child("items");
+                                    for (var key in original_item) {
+                                        if (
+                                            original_item.hasOwnProperty(key) &&
+                                            ![
+                                                "qty",
+                                                "custom_stock_order",
+                                                "purchase_order",
+                                                "custom_order_confirmation",
+                                                "name",
+                                                "idx",
+                                            ].includes(key)
+                                        ) {
+                                            new_item[key] = original_item[key];
+                                        }
+                                    }
+                                    new_item.qty = remainingQty; // Set remaining qty
+                                    // Reset stock order related fields for the remaining quantity
+                                    new_item.custom_stock_order = "";
+                                    new_item.purchase_order = "";
+                                    new_item.custom_order_confirmation = "";
+                                }
+
+                                frm.refresh_fields();
+                                frm.refresh();
+                            }
+                        },
+                    });
                 });
+            } else {
+                // Immediately resolve the promise for items that do not meet the condition
+                return Promise.resolve();
             }
         });
+        // Wait for all promises to resolve
+        Promise.all(promises)
+            .then(() => {
+                frm.refresh_fields();
+                frm.refresh();
+                console.log("All promises resolved");
+                update_commission(frm); // Call your function here
+            })
+            .catch((error) => {
+                console.error(error);
+                frappe.msgprint(__("An error occurred during processing."));
+            });
     } else {
         frappe.msgprint(__("The sales order is already submitted."));
     }
+    setTimeout(function () {
+        update_row_color(frm);
+        update_commission(frm);
+    }, 1000);
 }
 
 function calc_total_rep_commission(frm) {
@@ -634,4 +668,100 @@ function calc_total_snc_commission(frm) {
 function hide_fields(frm) {
     frm.toggle_display("accounting_dimensions_section", false);
     frm.toggle_display("currency_and_price_list", false);
+}
+
+function update_commission(frm) {
+    frm.doc.items.forEach(function (item) {
+        // get item price data from item price based on customer and item code
+        frappe.call({
+            method: "frappe.client.get_list",
+            args: {
+                doctype: "Item Price",
+                filters: {
+                    item_code: item.item_code,
+                    customer: frm.doc.customer,
+                },
+                fields: [
+                    "name",
+                    "price_list_rate",
+                    "custom_snc_commission_type",
+                    "custom_snc_commission_",
+                    "custom_snc_commission_amount",
+                    "custom_rep_commission_type",
+                    "custom_rep_commission_amount",
+                    "custom_rep_commission_",
+                    "custom_representative",
+                    "custom_has_representative_commission",
+                ],
+            },
+            callback: function (r) {
+                if (r.message) {
+                    console.log("item price", r.message);
+
+                    item.custom_snc_commission_type =
+                        r.message[0].custom_snc_commission_type;
+                    item.custom_snc_commission_ =
+                        r.message[0].custom_snc_commission_;
+                    item.custom_snc_commission_amount_per_qty =
+                        r.message[0].custom_snc_commission_amount;
+                    item.custom_rep_commission_type =
+                        r.message[0].custom_rep_commission_type;
+                    item.custom_rep_commission_amount_per_qty =
+                        r.message[0].custom_rep_commission_amount;
+                    item.custom_rep_commission_ =
+                        r.message[0].custom_rep_commission_;
+                    item.custom_representative =
+                        r.message[0].custom_representative;
+                    item.custom_has_representative_commission =
+                        r.message[0].custom_has_representative_commission;
+                    if (item.custom_rep_commission_type == "Percent")
+                        item.custom_rep_commission_amount =
+                            (item.custom_rep_commission_ *
+                                item.rate *
+                                item.qty) /
+                            100;
+                    else if (item.custom_rep_commission_type == "Amount")
+                        item.custom_rep_commission_amount =
+                            item.custom_rep_commission_amount_per_qty *
+                            item.qty;
+
+                    if (item.custom_snc_commission_type == "Percent")
+                        item.custom_snc_commission_amount =
+                            (item.custom_snc_commission_ *
+                                item.rate *
+                                item.qty) /
+                            100;
+                    else if (item.custom_snc_commission_type == "Amount")
+                        item.custom_snc_commission_amount =
+                            item.custom_snc_commission_amount_per_qty *
+                            item.qty;
+
+                    // refresn the item_code field
+                    frm.refresh_field("items");
+                }
+            },
+        });
+    });
+    frm.refresh_fields();
+    frm.refresh();
+    calc_total_snc_commission(frm);
+    calc_total_rep_commission(frm);
+    update_row_color(frm);
+}
+
+function update_row_color(frm) {
+    cur_frm.fields_dict["items"].$wrapper
+        .find(".grid-body .rows")
+        .find(".grid-row")
+        .each(function (i, item) {
+            let d =
+                locals[cur_frm.fields_dict["items"].grid.doctype][
+                    $(item).attr("data-name")
+                ];
+            if (d["custom_stock_order"] && d["custom_stock_order"].length > 0) {
+                $(item)
+                    .find(".grid-row-check")
+                    .css({ "background-color": "green" });
+            }
+        });
 }

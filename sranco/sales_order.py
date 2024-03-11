@@ -110,6 +110,7 @@ def sales_order_on_submit(doc, method):
     for item in doc.items:
         if not item.purchase_order:
             po_item = po.append('items', {})
+            po.custom_order_confirmation = item.custom_order_confirmation
             po_item.item_code = item.item_code
             po_item.schedule_date = doc.delivery_date
             po_item.expected_delivery_date = doc.delivery_date
