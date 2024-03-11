@@ -33,7 +33,9 @@
   {
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date"
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_xcf6t",
@@ -67,13 +69,14 @@
   {
    "fieldname": "customers_purchase_order",
    "fieldtype": "Data",
-   "label": "Customer's Purchase Order"
+   "label": "Customer's Purchase Order",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-02-29 17:00:28.607893",
+ "modified": "2024-03-11 19:14:08.259385",
  "modified_by": "Administrator",
  "module": "Sranco",
  "name": "Ready for Shipment",

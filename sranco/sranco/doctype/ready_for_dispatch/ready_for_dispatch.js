@@ -243,6 +243,8 @@ function clear_doc_data(frm) {
     frm.set_value("customer", "");
     frm.set_value("sales_order", "");
     frm.set_value("purchase_order", "");
+    frm.set_value("customers_purchase_order", "");
+    frm.set_value("date", "");
 
     // Clear the child table data
     frm.clear_table("dispatch_table");

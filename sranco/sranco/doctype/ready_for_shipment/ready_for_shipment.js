@@ -294,6 +294,7 @@ function clear_doc_data(frm) {
     frm.set_value("date", "");
     frm.set_value("purchase_order", "");
     frm.set_value("sales_order", "");
+    frm.set_value("customers_purchase_order", "");
 
     // Clear the child table data
     frm.clear_table("shipment_table");

@@ -138,6 +138,7 @@ def create_gi_date_tracker_and_update_po(dispatch_data, date):
             # Create and submit GI Date Tracker
             gi_date_tracker = frappe.new_doc('GI Date Tracker')
             gi_date_tracker.sequence_no = (row['sequence_no'])
+            gi_date_tracker.creation_date = date
             gi_date_tracker.date = row['gi_date']
             gi_date_tracker.item_code = row['item_code']
             gi_date_tracker.item_name = row['item_name']
@@ -216,7 +217,7 @@ def create_shipment_tracker_and_update_po(shipment_data, purchase_order, sales_o
             for mode_field, mode_name in [('air_qty', 'Air'), ('express_qty', 'Express'), ('sea_qty', 'Sea')]:
                 if row.get(mode_field):  # If the mode has a quantity
                     transport_mode = frappe.get_doc('Transport Mode', mode_name)
-                    eod_days = calculate_eod(row['delivery_date'], transport_mode.days)
+                    eod_days = calculate_eod(date, transport_mode.days)
                     shipment_tracker.append('transport_mode_table', {
                         'sequence_no': row['sequence_no'],  # This is the same as the sequence_no in GI Date Tracker
                         'mode': mode_name,
