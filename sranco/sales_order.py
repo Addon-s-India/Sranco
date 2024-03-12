@@ -220,3 +220,30 @@ def custom_item_query(doctype, txt, searchfield, start, page_len, filters):
         'start': start,
         'page_len': page_len
     })
+    
+
+@frappe.whitelist()
+def get_purchase_order_from_items(order_confirmation):
+    result = frappe.db.sql("""
+        SELECT soi.purchase_order
+        FROM `tabSales Order` so
+        JOIN `tabSales Order Item` soi ON so.name = soi.parent
+        WHERE soi.custom_order_confirmation = %s
+        LIMIT 1
+    """, (order_confirmation,), as_dict=1)
+
+    return result[0].purchase_order if result else None
+
+
+@frappe.whitelist()
+def get_sales_order_from_items(order_confirmation):
+    logger.info(f"Order Confirmation {order_confirmation}")
+    result = frappe.db.sql("""
+        SELECT so.name
+        FROM `tabSales Order` so
+        JOIN `tabSales Order Item` soi ON so.name = soi.parent
+        WHERE soi.custom_order_confirmation = %s
+        LIMIT 1
+    """, (order_confirmation,), as_dict=1)
+    logger.info(f"Sales Order from items {result}")
+    return result[0].name if result else None

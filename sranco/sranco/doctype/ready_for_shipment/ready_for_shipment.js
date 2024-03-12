@@ -4,7 +4,8 @@
 frappe.ui.form.on("Ready for Shipment", {
     order_confirmation: function (frm) {
         if (frm.doc.order_confirmation) {
-            fetch_purchase_order_for_shipment(frm.doc.order_confirmation);
+            fetch_purchase_order_for_shipment(frm.doc.order_confirmation, frm);
+            get_sales_order_number(frm.doc.order_confirmation, frm);
         }
     },
 
@@ -83,7 +84,7 @@ function validate_transport_mode_qty(frm, cdt, cdn) {
     }
 }
 
-function fetch_purchase_order_for_shipment(order_confirmation) {
+function fetch_purchase_order_for_shipment(order_confirmation, frm) {
     frappe.call({
         method: "frappe.client.get_list",
         args: {
@@ -99,7 +100,7 @@ function fetch_purchase_order_for_shipment(order_confirmation) {
                 cur_frm.set_value("purchase_order", purchase_order_data.name);
                 cur_frm.set_value("customer", purchase_order_data.customer);
                 // Fetching items from the Purchase Order and populating the shipment_table
-                fetch_purchase_order_items(purchase_order_data);
+                fetch_purchase_order_items(purchase_order_data, frm);
             } else {
                 frappe.msgprint(
                     "No Purchase Order found with the given Order Confirmation number."
@@ -109,21 +110,15 @@ function fetch_purchase_order_for_shipment(order_confirmation) {
     });
 
     frappe.call({
-        method: "frappe.client.get_list",
+        method: "sranco.sales_order.get_purchase_order_from_items",
         args: {
-            doctype: "Sales Order",
-            filters: {
-                custom_order_confirmation: order_confirmation,
-            },
-            fields: ["name", "po_no"],
+            order_confirmation: order_confirmation,
         },
         callback: function (response) {
+            console.log("response.message", response.message);
             if (response.message && response.message[0].po_no) {
                 console.log("response.message", response.message);
-                cur_frm.set_value(
-                    "customers_purchase_order",
-                    response.message[0].po_no
-                );
+                cur_frm.set_value("customers_purchase_order", response.message);
             } else {
                 frappe.show_alert("No Customer's Purchase Order No.");
             }
@@ -131,7 +126,7 @@ function fetch_purchase_order_for_shipment(order_confirmation) {
     });
 }
 
-function fetch_purchase_order_items(purchase_order_data) {
+function fetch_purchase_order_items(purchase_order_data, frm) {
     frappe.call({
         method: "frappe.client.get",
         args: {
@@ -141,10 +136,8 @@ function fetch_purchase_order_items(purchase_order_data) {
         callback: function (response) {
             if (response.message) {
                 let purchase_order = response.message;
-                let sales_order;
                 cur_frm.set_value("shipment_table", []);
                 $.each(purchase_order.items, function (index, item) {
-                    sales_order = item.sales_order;
                     console.log("Item :: ", item);
                     console.log(
                         "Custom order confirmation :: ",
@@ -163,7 +156,7 @@ function fetch_purchase_order_items(purchase_order_data) {
                         customer_item_code: item.custom_customer_item_code,
                         customer: purchase_order.customer,
                         purchase_order: purchase_order.name,
-                        sales_order: item.sales_order,
+                        sales_order: frm.doc.sales_order,
                         order_confirmation:
                             purchase_order.custom_order_confirmation,
                         air_qty: 0,
@@ -171,7 +164,6 @@ function fetch_purchase_order_items(purchase_order_data) {
                         sea_qty: 0,
                     });
                 });
-                cur_frm.set_value("sales_order", sales_order);
                 cur_frm.refresh_field("shipment_table");
             }
         },
@@ -301,4 +293,22 @@ function clear_doc_data(frm) {
 
     // Refresh the form to reflect the changes
     frm.refresh();
+}
+
+function get_sales_order_number(order_confirmation, frm) {
+    frappe.call({
+        method: "sranco.sales_order.get_sales_order_from_items",
+        args: {
+            order_confirmation: order_confirmation,
+        },
+        callback: function (response) {
+            console.log("response.message", response.message);
+            if (response.message && response.message) {
+                console.log("response.message", response.message);
+                frm.set_value("sales_order", response.message);
+            } else {
+                frappe.show_alert("No Sales Order No.");
+            }
+        },
+    });
 }
