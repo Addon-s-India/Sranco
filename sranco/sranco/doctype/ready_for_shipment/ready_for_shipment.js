@@ -98,7 +98,7 @@ function fetch_purchase_order_for_shipment(order_confirmation, frm) {
             if (response.message && response.message.length) {
                 let purchase_order_data = response.message[0];
                 cur_frm.set_value("purchase_order", purchase_order_data.name);
-                cur_frm.set_value("customer", purchase_order_data.customer);
+                // cur_frm.set_value("customer", purchase_order_data.customer);
                 // Fetching items from the Purchase Order and populating the shipment_table
                 fetch_purchase_order_items(purchase_order_data, frm);
             } else {
@@ -154,7 +154,7 @@ function fetch_purchase_order_items(purchase_order_data, frm) {
                             item.custom_ready_qty - item.custom_shipped_qty,
                         tn_number: item.custom_tn_number,
                         customer_item_code: item.custom_customer_item_code,
-                        customer: purchase_order.customer,
+                        customer: frm.doc.customer,
                         purchase_order: purchase_order.name,
                         sales_order: frm.doc.sales_order,
                         order_confirmation:
@@ -305,7 +305,8 @@ function get_sales_order_number(order_confirmation, frm) {
             console.log("response.message", response.message);
             if (response.message && response.message) {
                 console.log("response.message", response.message);
-                frm.set_value("sales_order", response.message);
+                frm.set_value("sales_order", response.message.sales_order);
+                frm.set_value("customer", response.message.customer);
             } else {
                 frappe.show_alert("No Sales Order No.");
             }

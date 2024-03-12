@@ -239,11 +239,12 @@ def get_purchase_order_from_items(order_confirmation):
 def get_sales_order_from_items(order_confirmation):
     logger.info(f"Order Confirmation {order_confirmation}")
     result = frappe.db.sql("""
-        SELECT so.name
+        SELECT so.name, so.customer
         FROM `tabSales Order` so
         JOIN `tabSales Order Item` soi ON so.name = soi.parent
         WHERE soi.custom_order_confirmation = %s
         LIMIT 1
     """, (order_confirmation,), as_dict=1)
     logger.info(f"Sales Order from items {result}")
-    return result[0].name if result else None
+
+    return {"sales_order": result[0].name, "customer": result[0].customer} if result else None
