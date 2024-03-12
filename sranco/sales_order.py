@@ -204,13 +204,13 @@ def custom_item_query(doctype, txt, searchfield, start, page_len, filters):
         customer_filter = "AND ip.customer = %(customer)s"
 
     return frappe.db.sql(f"""
-        SELECT it.item_code, it.item_name, icd.ref_code
+        SELECT it.item_code, it.item_name, it.custom_tn_number, icd.ref_code
         FROM `tabItem` it
         LEFT JOIN `tabItem Price` ip ON it.item_code = ip.item_code
         LEFT JOIN `tabItem Customer Detail` icd ON it.item_code = icd.parent
         WHERE it.docstatus = 0
             {customer_filter}
-            AND ((it.{searchfield} LIKE %(txt)s) OR (icd.ref_code LIKE %(txt)s))
+            AND ((it.{searchfield} LIKE %(txt)s) OR (icd.ref_code LIKE %(txt)s) OR (it.item_name LIKE %(txt)s) OR (it.item_code LIKE %(txt)s) OR (it.custom_tn_number LIKE %(txt)s) OR (it.custom_tn_number LIKE %(_txt)s))
         ORDER BY it.creation ASC, it.name ASC
         LIMIT %(start)s, %(page_len)s
     """, {
