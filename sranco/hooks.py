@@ -147,6 +147,9 @@ doc_events = {
     "Purchase Receipt": {
         "on_trash": "sranco.purchase_receipt.reset_received_qty_in_shipment_tracker",
     },
+    "Quotation": {
+        "on_submit": "sranco.quotation.quotation_on_submit",
+    },
 }
 
 # doc_events = {

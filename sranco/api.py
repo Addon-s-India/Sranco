@@ -195,12 +195,13 @@ def create_shipment_tracker_and_update_po(shipment_data, purchase_order, sales_o
             if row['update_shipment_qty'] <= 0 or row['update_shipment_qty'] > row['ready_qty'] - row['shipment_qty'] or total_transport_qty != row['update_shipment_qty']:
                 skipped_items.append(row['item_code'])
                 continue  # Skip this iteration and move to the next row
-            sales_order_data = frappe.get_doc("Sales Order", sales_order)
+            # sales_order_data = frappe.get_doc("Sales Order", sales_order)
             # Create Shipment Tracker
             shipment_tracker = frappe.new_doc('Shipment Tracker')
             
             # Populate the main fields from row data
-            shipment_tracker.sales_order = sales_order
+            if sales_order:
+                shipment_tracker.sales_order = sales_order
             shipment_tracker.gi_date = row['delivery_date']
             shipment_tracker.purchase_order = purchase_order
             shipment_tracker.sequence_no = row['sequence_no']

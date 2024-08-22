@@ -60,6 +60,8 @@ frappe.ui.form.on("Shipment Table", {
             row.ready_qty - row.shipment_qty
         );
         console.log("row.update_shipment_qty :: ", row.update_shipment_qty);
+        var diff = row.ready_qty - row.shipment_qty;
+        console.log("diff :: ", diff);
         if (row.update_shipment_qty !== row.ready_qty - row.shipment_qty) {
             frappe.model.set_value(cdt, cdn, "update_shipment_qty", 0.0);
             frappe.msgprint(
@@ -175,7 +177,7 @@ function apply_shipment_changes(frm) {
     let valid_rows = frm.doc.shipment_table.filter(
         (row) =>
             row.update_shipment_qty > 0 &&
-            row.update_shipment_qty <= row.ready_qty - row.shipment_qty &&
+            row.update_shipment_qty === row.ready_qty - row.shipment_qty &&
             row.air_qty + row.express_qty + row.sea_qty ===
                 row.update_shipment_qty
     );
@@ -189,12 +191,18 @@ function apply_shipment_changes(frm) {
 
 function create_shipment_tracker_and_update_po(frm) {
     // Call server-side method
+    var sales_order = "";
+    if (!frm.doc.sales_order) {
+        sales_order = null;
+    } else {
+        sales_order = frm.doc.sales_order;
+    }
     frappe.call({
         method: "sranco.api.create_shipment_tracker_and_update_po",
         args: {
             shipment_data: frm.doc.shipment_table,
             purchase_order: frm.doc.purchase_order,
-            sales_order: frm.doc.sales_order,
+            sales_order: sales_order,
             order_confirmation: frm.doc.order_confirmation,
             date: frm.doc.date,
         },
@@ -303,7 +311,7 @@ function get_sales_order_number(order_confirmation, frm) {
         },
         callback: function (response) {
             console.log("response.message", response.message);
-            if (response.message && response.message) {
+            if (response.message && response.message.sales_order) {
                 console.log("response.message", response.message);
                 frm.set_value("sales_order", response.message.sales_order);
                 frm.set_value("customer", response.message.customer);
